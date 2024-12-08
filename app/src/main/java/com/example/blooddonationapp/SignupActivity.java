@@ -2,7 +2,6 @@ package com.example.blooddonationapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,7 +15,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -57,7 +55,7 @@ public class SignupActivity extends AppCompatActivity {
                         // Sign-up successful
                         FirebaseUser user = auth.getCurrentUser();
                         Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                        startActivity(new Intent(SignupActivity.this, MenuActivity.class));
                         finish();
                     } else {
                         // If sign up fails, display a message to the user.

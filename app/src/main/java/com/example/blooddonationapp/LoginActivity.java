@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                         // Login successful
                         FirebaseUser user = auth.getCurrentUser();
                         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        startActivity(new Intent(LoginActivity.this, MenuActivity.class));
                         finish();
                     } else {
                         // If login fails, display a message to the user.
