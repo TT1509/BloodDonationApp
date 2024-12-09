@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class SignupActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
-    private EditText emailInput, passwordInput;
+    private EditText emailInput, passwordInput, confirmPasswordInput;
     private Button signupButton;
     private TextView loginLink;
 
@@ -33,6 +33,7 @@ public class SignupActivity extends AppCompatActivity {
 
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
+        confirmPasswordInput = findViewById(R.id.confirmPasswordInput);
         signupButton = findViewById(R.id.signupButton);
         loginLink = findViewById(R.id.loginLink);
 
@@ -43,9 +44,15 @@ public class SignupActivity extends AppCompatActivity {
     private void signupUser() {
         String email = emailInput.getText().toString().trim();
         String password = passwordInput.getText().toString().trim();
+        String confirmPassword = confirmPasswordInput.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(SignupActivity.this, "Please enter both email and password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(SignupActivity.this, "Password do not match", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -53,9 +60,8 @@ public class SignupActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Sign-up successful
-                        FirebaseUser user = auth.getCurrentUser();
-                        Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(SignupActivity.this, MenuActivity.class));
+                        Toast.makeText(SignupActivity.this, "Signup successful! Please log in.", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
                         finish();
                     } else {
                         // If sign up fails, display a message to the user.

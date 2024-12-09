@@ -38,12 +38,12 @@
         android:textColor="@color/black" />
 
     <EditText
-        android:id="@+id/nameInput"
+        android:id="@+id/confirmPasswordInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:hint="Full Name"
-        android:inputType="textPersonName"
+        android:hint="Confirm Password"
+        android:inputType="textPassword"
         android:padding="12dp"
         android:textColor="@color/black" />
 
