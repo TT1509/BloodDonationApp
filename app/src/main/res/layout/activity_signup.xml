@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundColor"
+    android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="24dp">
@@ -12,8 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Login"
-        android:textColor="?attr/colorPrimaryVariant"
+        android:text="Signup"
+        android:textColor="@color/purple_500"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -22,39 +22,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:background="@android:drawable/edit_text"
-        android:hint="Username"
-        android:inputType="textPersonName"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
         android:padding="12dp"
-        android:textColor="?attr/colorOnSecondary" />
+        android:textColor="@color/black" />
 
     <EditText
         android:id="@+id/passwordInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:background="@android:drawable/edit_text"
         android:hint="Password"
         android:inputType="textPassword"
         android:padding="12dp"
-        android:textColor="?attr/colorOnSecondary" />
+        android:textColor="@color/black" />
 
     <EditText
         android:id="@+id/nameInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:background="@android:drawable/edit_text"
         android:hint="Full Name"
         android:inputType="textPersonName"
         android:padding="12dp"
-        android:textColor="?attr/colorOnSecondary" />
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/signupButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="?attr/colorPrimary"
+        android:backgroundTint="@color/purple_500"
         android:padding="12dp"
         android:text="SignUp"
         android:textColor="#FFFFFF" />
@@ -64,7 +61,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Don't have an account? Sign Up"
-        android:textColor="?attr/colorPrimary" />
-
+        android:text="Already have an account? Login"
+        android:textColor="@color/purple_500" />
 </LinearLayout>
