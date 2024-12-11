@@ -13,6 +13,9 @@
         android:theme="@style/Theme.BloodDonationApp"
         tools:targetApi="31">
         <activity
+            android:name=".SuperUserActivity"
+            android:exported="false" />
+        <activity
             android:name=".SiteManagerActivity"
             android:exported="false" />
         <activity

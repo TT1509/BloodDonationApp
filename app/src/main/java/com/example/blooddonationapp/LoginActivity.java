@@ -68,6 +68,8 @@ public class LoginActivity extends AppCompatActivity {
                                             startActivity(new Intent(LoginActivity.this, DonorActivity.class));
                                         } else if ("Site Manager".equals(role)) {
                                             startActivity(new Intent(LoginActivity.this, SiteManagerActivity.class));
+                                        } else if ("Super User".equals(role)) {
+                                            startActivity(new Intent(LoginActivity.this, SuperUserActivity.class));
                                         }
                                         finish();
                                     } else {
