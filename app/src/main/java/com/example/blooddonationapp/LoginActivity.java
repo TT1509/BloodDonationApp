@@ -2,6 +2,7 @@ package com.example.blooddonationapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,10 +16,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
+    private FirebaseFirestore firestore;
     private EditText emailInput, passwordInput;
     private Button loginButton;
     private TextView signupLink;
@@ -30,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance();
-
+        firestore = FirebaseFirestore.getInstance();
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
         loginButton = findViewById(R.id.loginButton);
@@ -52,15 +55,30 @@ public class LoginActivity extends AppCompatActivity {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Login successful
                         FirebaseUser user = auth.getCurrentUser();
-                        Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(LoginActivity.this, MenuActivity.class));
-                        finish();
+                        String userId = user.getUid();
+
+                        // Fetch user role from Firestore
+                        firestore.collection("users").document(userId).get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        String role = documentSnapshot.getString("role");
+
+                                        if ("Donor".equals(role)) {
+                                            startActivity(new Intent(LoginActivity.this, DonorActivity.class));
+                                        } else if ("Site Manager".equals(role)) {
+                                            startActivity(new Intent(LoginActivity.this, SiteManagerActivity.class));
+                                        }
+                                        finish();
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "Role not found for this user", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(e -> Log.e("LoginActivity", "Failed to fetch role", e));
                     } else {
-                        // If login fails, display a message to the user.
                         Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 }

@@ -12,22 +12,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BloodDonationApp"
         tools:targetApi="31">
-
         <activity
-            android:name="com.example.blooddonationapp.LoginActivity"
+            android:name=".SiteManagerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DonorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.example.blooddonationapp.SignupActivity"
+            android:name=".SignupActivity"
             android:exported="true" />
-
         <activity
-            android:name="com.example.blooddonationapp.MenuActivity"
+            android:name=".MenuActivity"
             android:exported="true" />
     </application>
 

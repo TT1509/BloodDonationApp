@@ -2,8 +2,11 @@ package com.example.blooddonationapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,12 +18,19 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignupActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
-    private EditText emailInput, passwordInput, confirmPasswordInput;
+    private FirebaseFirestore firestore;
+    private EditText emailInput, passwordInput;
     private Button signupButton;
+    private RadioGroup roleRadioGroup;
+    private RadioButton selectedRole;
     private TextView loginLink;
 
     @Override
@@ -28,13 +38,13 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
 
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
-        confirmPasswordInput = findViewById(R.id.confirmPasswordInput);
         signupButton = findViewById(R.id.signupButton);
+        roleRadioGroup = findViewById(R.id.roleRadioGroup);
         loginLink = findViewById(R.id.loginLink);
 
         signupButton.setOnClickListener(v -> signupUser());
@@ -44,29 +54,46 @@ public class SignupActivity extends AppCompatActivity {
     private void signupUser() {
         String email = emailInput.getText().toString().trim();
         String password = passwordInput.getText().toString().trim();
-        String confirmPassword = confirmPasswordInput.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            Toast.makeText(SignupActivity.this, "Please enter both email and password", Toast.LENGTH_SHORT).show();
+        // Check if a role is selected
+        int selectedRoleId = roleRadioGroup.getCheckedRadioButtonId();
+        if (selectedRoleId == -1) {
+            Toast.makeText(SignupActivity.this, "Please select a role", Toast.LENGTH_SHORT).show();
             return;
         }
+        selectedRole = findViewById(selectedRoleId);
+        String role = selectedRole.getText().toString();
 
-        if (!password.equals(confirmPassword)) {
-            Toast.makeText(SignupActivity.this, "Password do not match", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(SignupActivity.this, "Please enter both email and password", Toast.LENGTH_SHORT).show();
             return;
         }
 
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Sign-up successful
-                        Toast.makeText(SignupActivity.this, "Signup successful! Please log in.", Toast.LENGTH_SHORT).show();
+                        // Save user role in Firestore
+                        String userId = auth.getCurrentUser().getUid();
+                        saveUserRole(userId, email, role);
+
+                        Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(SignupActivity.this, LoginActivity.class));
                         finish();
                     } else {
-                        // If sign up fails, display a message to the user.
                         Toast.makeText(SignupActivity.this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
+    private void saveUserRole(String userId, String email, String role) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("email", email);
+        userMap.put("role", role);
+
+        firestore.collection("users").document(userId)
+                .set(userMap)
+                .addOnSuccessListener(aVoid -> Log.d("SignupActivity", "User role saved"))
+                .addOnFailureListener(e -> Log.e("SignupActivity", "Failed to save user role", e));
+    }
 }
+

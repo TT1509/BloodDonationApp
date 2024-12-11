@@ -47,6 +47,24 @@
         android:padding="12dp"
         android:textColor="@color/black" />
 
+    <RadioGroup
+        android:id="@+id/roleRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioDonor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Donor" />
+
+        <RadioButton
+            android:id="@+id/radioSiteManager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Site Manager" />
+    </RadioGroup>
+
     <Button
         android:id="@+id/signupButton"
         android:layout_width="match_parent"
