@@ -3,6 +3,7 @@ package com.example.blooddonationapp.Model;
 import java.util.Date;
 
 public class DonationSite {
+    private String managerId;
     private String name;
     private String location;
     private Date dateTime;
@@ -13,11 +14,20 @@ public class DonationSite {
     }
 
     // Parameterized constructor
-    public DonationSite(String name, String location, Date dateTime, String contactInfo) {
+    public DonationSite(String managerId, String name, String location, Date dateTime, String contactInfo) {
+        this.managerId = managerId;
         this.name = name;
         this.location = location;
         this.dateTime = dateTime;
         this.contactInfo = contactInfo;
+    }
+
+    public String getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
     }
 
     public String getName() {

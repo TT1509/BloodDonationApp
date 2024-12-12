@@ -100,6 +100,7 @@ public class CreateSiteActivity extends AppCompatActivity {
         String managerId = auth.getCurrentUser().getUid();
 
         DonationSite site = new DonationSite(
+                managerId,
                 siteName,
                 address,
                 siteDateTime,
