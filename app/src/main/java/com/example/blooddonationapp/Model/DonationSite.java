@@ -1,6 +1,8 @@
 package com.example.blooddonationapp.Model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class DonationSite {
     private String managerId;
@@ -8,9 +10,13 @@ public class DonationSite {
     private String location;
     private Date dateTime;
     private String contactInfo;
+    private List<String> volunteers;
+    private List<String> donors;
 
     // Default constructor for Firebase
     public DonationSite() {
+        this.volunteers = new ArrayList<>();
+        this.donors = new ArrayList<>();
     }
 
     // Parameterized constructor
@@ -20,6 +26,8 @@ public class DonationSite {
         this.location = location;
         this.dateTime = dateTime;
         this.contactInfo = contactInfo;
+        this.volunteers = new ArrayList<>();
+        this.donors = new ArrayList<>();
     }
 
     public String getManagerId() {
@@ -60,5 +68,21 @@ public class DonationSite {
 
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
+    }
+
+    public List<String> getVolunteers() {
+        return volunteers;
+    }
+
+    public void setVolunteers(List<String> volunteers) {
+        this.volunteers = volunteers;
+    }
+
+    public List<String> getDonors() {
+        return donors;
+    }
+
+    public void setDonors(List<String> donors) {
+        this.donors = donors;
     }
 }
