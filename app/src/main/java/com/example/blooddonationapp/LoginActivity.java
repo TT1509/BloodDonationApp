@@ -1,5 +1,6 @@
 package com.example.blooddonationapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,11 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,18 +23,25 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView signupLink;
 
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize Firebase Auth
+        // Initialize Firebase Auth and Firestore
         auth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
+
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
         loginButton = findViewById(R.id.loginButton);
         signupLink = findViewById(R.id.signupLink);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Logging in...");
+        progressDialog.setCancelable(false);
 
         loginButton.setOnClickListener(v -> loginUser());
         signupLink.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, SignupActivity.class)));
@@ -52,35 +56,66 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        progressDialog.show();
+
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
+                    progressDialog.dismiss();
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
-                        String userId = user.getUid();
-
-                        // Fetch user role from Firestore
-                        firestore.collection("users").document(userId).get()
-                                .addOnSuccessListener(documentSnapshot -> {
-                                    if (documentSnapshot.exists()) {
-                                        String role = documentSnapshot.getString("role");
-
-                                        if ("Donor".equals(role)) {
-                                            startActivity(new Intent(LoginActivity.this, DonorActivity.class));
-                                        } else if ("Site Manager".equals(role)) {
-                                            startActivity(new Intent(LoginActivity.this, SiteManagerActivity.class));
-                                        } else if ("Super User".equals(role)) {
-                                            startActivity(new Intent(LoginActivity.this, SuperUserActivity.class));
-                                        }
-                                        finish();
-                                    } else {
-                                        Toast.makeText(LoginActivity.this, "Role not found for this user", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(e -> Log.e("LoginActivity", "Failed to fetch role", e));
+                        if (user != null) {
+                            fetchUserRole(user.getUid());
+                        } else {
+                            Toast.makeText(LoginActivity.this, "User authentication failed", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    private void fetchUserRole(String userId) {
+        progressDialog.setMessage("Fetching user details...");
+        progressDialog.show();
+
+        firestore.collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    progressDialog.dismiss();
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+                        if (role != null) {
+                            navigateToRoleSpecificActivity(role.toLowerCase());
+                        } else {
+                            Toast.makeText(LoginActivity.this, "User role not found", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(LoginActivity.this, "User data does not exist", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Log.e("LoginActivity", "Failed to fetch role", e);
+                    Toast.makeText(LoginActivity.this, "Error fetching user details", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void navigateToRoleSpecificActivity(String role) {
+        Intent intent;
+        switch (role) {
+            case "donor":
+                intent = new Intent(LoginActivity.this, DonorActivity.class);
+                break;
+            case "site_manager":
+                intent = new Intent(LoginActivity.this, SiteManagerActivity.class);
+                break;
+            case "super_user":
+                intent = new Intent(LoginActivity.this, SuperUserActivity.class);
+                break;
+            default:
+                Toast.makeText(LoginActivity.this, "Unrecognized role: " + role, Toast.LENGTH_SHORT).show();
+                return;
+        }
+        startActivity(intent);
+        finish();
+    }
 }

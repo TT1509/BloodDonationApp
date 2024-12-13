@@ -18,52 +18,56 @@
         android:textStyle="bold" />
 
     <EditText
+        android:id="@+id/nameInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Full Name" />
+
+    <EditText
         android:id="@+id/emailInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:padding="12dp"
-        android:textColor="@color/black" />
+        android:hint="Email" />
+
+    <EditText
+        android:id="@+id/phoneNumberInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Phone Number" />
 
     <EditText
         android:id="@+id/passwordInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:hint="Password"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        android:textColor="@color/black" />
-
-    <EditText
-        android:id="@+id/confirmPasswordInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:hint="Confirm Password"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        android:textColor="@color/black" />
+        android:inputType="textPassword" />
 
     <RadioGroup
-        android:id="@+id/roleRadioGroup"
+        android:id="@+id/roleGroup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/radioDonor"
+            android:id="@+id/donorRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Donor" />
 
         <RadioButton
-            android:id="@+id/radioSiteManager"
+            android:id="@+id/siteManagerRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Site Manager" />
     </RadioGroup>
+
+    <!-- Specialized Fields for Donor -->
+    <Spinner
+        android:id="@+id/bloodTypeSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/blood_types"
+        android:spinnerMode="dropdown" />
 
     <Button
         android:id="@+id/signupButton"

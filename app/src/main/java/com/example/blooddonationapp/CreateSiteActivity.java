@@ -3,6 +3,7 @@ package com.example.blooddonationapp;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -14,9 +15,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.blooddonationapp.Model.DonationSite;
+import com.example.blooddonationapp.Model.SiteManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -84,7 +88,7 @@ public class CreateSiteActivity extends AppCompatActivity {
     }
 
     private void updateSiteDateTime(Calendar calendar) {
-        siteDateTime = calendar.getTime(); // Update the Date object
+        siteDateTime = calendar.getTime();
     }
 
     private void createDonationSite() {
@@ -110,11 +114,49 @@ public class CreateSiteActivity extends AppCompatActivity {
         firestore.collection("donation_sites")
                 .add(site)
                 .addOnSuccessListener(documentReference -> {
+                    // After the site is created, get the created site's ID
+                    String donationSiteId = documentReference.getId();
+                    // Call the method to add this site ID to the SiteManager's managedSites list
+                    addDonationSiteToManager(managerId, donationSiteId);
+
                     Toast.makeText(CreateSiteActivity.this, "Site created successfully!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(CreateSiteActivity.this, "Failed to create site: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void addDonationSiteToManager(String managerId, String donationSiteId) {
+        // Reference to the SiteManager document in Firestore
+        DocumentReference managerDocRef = firestore.collection("users").document(managerId);
+
+        // Get the current SiteManager data and add the new site ID to their managedSites list
+        managerDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                SiteManager siteManager = documentSnapshot.toObject(SiteManager.class);
+
+                if (siteManager != null) {
+                    // Initialize the managedSites list if it's null
+                    if (siteManager.getManagedSites() == null) {
+                        siteManager.setManagedSites(new ArrayList<>());
+                    }
+
+                    // Add the donation site ID to the manager's list of managed sites
+                    siteManager.addManagedSite(donationSiteId);
+
+                    // Update the SiteManager document with the new managedSites list
+                    managerDocRef.update("managedSites", siteManager.getManagedSites())
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d("CreateSiteActivity", "Site ID added to manager's managedSites list.");
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("CreateSiteActivity", "Failed to update manager's managedSites list: " + e.getMessage());
+                            });
+                }
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("CreateSiteActivity", "Error fetching manager data: " + e.getMessage());
+        });
     }
 }
