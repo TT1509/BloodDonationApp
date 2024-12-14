@@ -19,6 +19,7 @@ import com.example.blooddonationapp.Adapter.DonationSiteAdapter;
 import com.example.blooddonationapp.CreateSiteActivity;
 import com.example.blooddonationapp.Model.DonationSite;
 import com.example.blooddonationapp.R;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class SiteManagerFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         siteList = new ArrayList<>();
-        adapter = new DonationSiteAdapter(siteList);
+        adapter = new DonationSiteAdapter(siteList, getContext());
         recyclerView.setAdapter(adapter);
 
         loadDonationSites();
@@ -58,9 +59,17 @@ public class SiteManagerFragment extends Fragment {
         firestore.collection("donation_sites")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<DonationSite> sites = queryDocumentSnapshots.toObjects(DonationSite.class);
                     siteList.clear();
-                    siteList.addAll(sites);
+                    List<String> siteIds = new ArrayList<>(); // Store document IDs
+
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        DonationSite site = doc.toObject(DonationSite.class);
+                        siteIds.add(doc.getId()); // Save Firestore document ID
+                        siteList.add(site);
+                    }
+
+                    // Pass siteIds to the adapter along with siteList
+                    adapter.setSiteIds(siteIds);
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
@@ -68,5 +77,6 @@ public class SiteManagerFragment extends Fragment {
                     Log.e("DonationSiteList", "Error loading sites", e);
                 });
     }
+
 }
 
