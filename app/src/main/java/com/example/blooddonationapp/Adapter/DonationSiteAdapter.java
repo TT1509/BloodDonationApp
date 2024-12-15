@@ -48,7 +48,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
         holder.siteName.setText(site.getName());
         holder.siteLocation.setText(site.getLocation());
 
-        String siteId = siteIds.get(position);
+        String siteId = siteIds.get(position); // Get corresponding document ID
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -61,24 +61,50 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
 
                     if (volunteers != null && volunteers.contains(currentUserId)) {
                         holder.volunteerButton.setText("Volunteered");
-                        holder.volunteerButton.setEnabled(false); // Disable the button
+                        holder.volunteerButton.setOnClickListener(v -> showLeaveConfirmationDialog(siteId, currentUserId, holder.volunteerButton));
                     } else {
                         holder.volunteerButton.setText("Volunteer");
-                        holder.volunteerButton.setEnabled(true); // Enable the button
+                        holder.volunteerButton.setOnClickListener(v -> joinDonationSite(siteId, currentUserId, holder.volunteerButton));
                     }
                 });
+    }
 
-        holder.volunteerButton.setOnClickListener(v -> {
-            // Use siteId to update the correct Firestore document
-            firestore.collection("donation_sites").document(siteId)
-                    .update("volunteers", FieldValue.arrayUnion(currentUserId))
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(context, "You are now a volunteer!", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(context, "Failed to volunteer: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        });
+    private void joinDonationSite(String siteId, String userId, Button button) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("donation_sites").document(siteId)
+                .update("volunteers", FieldValue.arrayUnion(userId))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "You are now a volunteer!", Toast.LENGTH_SHORT).show();
+                    button.setText("Volunteered");
+                    button.setOnClickListener(v -> showLeaveConfirmationDialog(siteId, userId, button));
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Failed to volunteer: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void showLeaveConfirmationDialog(String siteId, String userId, Button button) {
+        // Create a confirmation dialog
+        new androidx.appcompat.app.AlertDialog.Builder(context)
+                .setTitle("Leave Donation Site")
+                .setMessage("Are you sure you want to stop volunteering for this site?")
+                .setPositiveButton("Yes", (dialog, which) -> leaveDonationSite(siteId, userId, button))
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    private void leaveDonationSite(String siteId, String userId, Button button) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("donation_sites").document(siteId)
+                .update("volunteers", FieldValue.arrayRemove(userId))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "You have left the donation site.", Toast.LENGTH_SHORT).show();
+                    button.setText("Volunteer");
+                    button.setOnClickListener(v -> joinDonationSite(siteId, userId, button));
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Failed to leave: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override
