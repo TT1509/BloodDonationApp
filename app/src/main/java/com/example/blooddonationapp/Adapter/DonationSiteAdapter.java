@@ -48,15 +48,30 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
         holder.siteName.setText(site.getName());
         holder.siteLocation.setText(site.getLocation());
 
-        String siteId = siteIds.get(position); // Get corresponding document ID
+        String siteId = siteIds.get(position);
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Check if the user is already a volunteer
+        firestore.collection("donation_sites").document(siteId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    List<String> volunteers = (List<String>) documentSnapshot.get("volunteers");
+
+                    if (volunteers != null && volunteers.contains(currentUserId)) {
+                        holder.volunteerButton.setText("Volunteered");
+                        holder.volunteerButton.setEnabled(false); // Disable the button
+                    } else {
+                        holder.volunteerButton.setText("Volunteer");
+                        holder.volunteerButton.setEnabled(true); // Enable the button
+                    }
+                });
 
         holder.volunteerButton.setOnClickListener(v -> {
-            String managerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
             // Use siteId to update the correct Firestore document
-            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
             firestore.collection("donation_sites").document(siteId)
-                    .update("volunteers", FieldValue.arrayUnion(managerId))
+                    .update("volunteers", FieldValue.arrayUnion(currentUserId))
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(context, "You are now a volunteer!", Toast.LENGTH_SHORT).show();
                     })
