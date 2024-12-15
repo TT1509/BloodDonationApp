@@ -113,6 +113,23 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
+        // Calculate age
+        Calendar today = Calendar.getInstance();
+        Calendar dobCalendar = Calendar.getInstance();
+        dobCalendar.setTime(calendar.getTime());
+
+        int age = today.get(Calendar.YEAR) - dobCalendar.get(Calendar.YEAR);
+
+        // Adjust age if the birthday hasn't occurred this year yet
+        if (today.get(Calendar.DAY_OF_YEAR) < dobCalendar.get(Calendar.DAY_OF_YEAR)) {
+            age--;
+        }
+
+        if (age < 18) {
+            Toast.makeText(this, "You must be at least 18 years old to sign up.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Parse phone number
         Integer phoneNumber;
         try {
