@@ -1,5 +1,6 @@
 package com.example.blooddonationapp.Model;
 
+import java.util.Date;
 import java.util.List;
 
 public class SuperUser extends User {
@@ -11,8 +12,8 @@ public class SuperUser extends User {
     }
 
     public SuperUser(String name, String email, Integer phoneNumber,
-                     String role, boolean canGenerateReports, List<String> donationSitesList) {
-        super(name, email, phoneNumber, role);
+                     String role, Date dateOfBirth, String gender, boolean canGenerateReports, List<String> donationSitesList) {
+        super(name, email, phoneNumber, role, dateOfBirth, gender);
         this.canGenerateReports = canGenerateReports;
         this.donationSitesList = donationSitesList;
     }

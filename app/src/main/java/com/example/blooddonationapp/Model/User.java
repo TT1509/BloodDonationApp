@@ -3,21 +3,25 @@ package com.example.blooddonationapp.Model;
 import java.util.Date;
 
 public class User {
-    private String name;         // User's full name
+    private String name;
     private String email;
     private Integer phoneNumber;
-    private String role;         // Role in the system ("donor", "site_manager", "admin")
+    private String role;
+    private Date dateOfBirth;
+    private String gender;
 
     // Default constructor for Firebase
     public User() {}
 
     // Parameterized constructor
     public User(String name, String email, Integer phoneNumber,
-                String role) {
+                String role, Date dateOfBirth, String gender) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = role;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
     }
 
     public String getEmail() {
@@ -52,5 +56,20 @@ public class User {
         this.role = role;
     }
 
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
 }

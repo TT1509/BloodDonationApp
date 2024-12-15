@@ -1,6 +1,7 @@
 package com.example.blooddonationapp.Model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SiteManager extends User {
@@ -13,8 +14,8 @@ public class SiteManager extends User {
 
     // Parameterized constructor
     public SiteManager(String name, String email, Integer phoneNumber,
-                       String role) {
-        super(name, email, phoneNumber, role);
+                       String role, Date dateOfBirth, String gender) {
+        super(name, email, phoneNumber, role, dateOfBirth, gender);
         this.managedSites = new ArrayList<>();
     }
 

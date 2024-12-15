@@ -1,5 +1,6 @@
 package com.example.blooddonationapp;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,20 +19,24 @@ import com.example.blooddonationapp.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class SignupActivity extends AppCompatActivity {
 
     private Spinner bloodTypeSpinner;
     private EditText nameInput, emailInput, passwordInput, phoneNumberInput;
-    private RadioGroup roleGroup;
-    private RadioButton donorRadio, siteManagerRadio;
-    private Button signupButton;
+    private RadioGroup roleGroup, genderGroup;
+    private RadioButton donorRadio, siteManagerRadio, maleRadio, femaleRadio;
+    private Button signupButton, dobButton;
 
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +47,23 @@ public class SignupActivity extends AppCompatActivity {
         nameInput = findViewById(R.id.nameInput);
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
-        phoneNumberInput = findViewById(R.id.phoneNumberInput); // Added phoneNumber
+        phoneNumberInput = findViewById(R.id.phoneNumberInput);
+        dobButton = findViewById(R.id.dobButton);
         bloodTypeSpinner = findViewById(R.id.bloodTypeSpinner);
         roleGroup = findViewById(R.id.roleGroup);
         donorRadio = findViewById(R.id.donorRadio);
         siteManagerRadio = findViewById(R.id.siteManagerRadio);
+        genderGroup = findViewById(R.id.genderGroup);
+        maleRadio = findViewById(R.id.maleRadio);
+        femaleRadio = findViewById(R.id.femaleRadio);
         signupButton = findViewById(R.id.signupButton);
 
         auth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
+        calendar = Calendar.getInstance();
+
+        // Set up DatePicker for date of birth
+        dobButton.setOnClickListener(v -> showDatePickerDialog());
 
         // Listen for role selection changes
         roleGroup.setOnCheckedChangeListener((group, checkedId) -> {
@@ -60,9 +73,28 @@ public class SignupActivity extends AppCompatActivity {
                 bloodTypeSpinner.setVisibility(View.GONE);
             }
         });
-
-        // Handle signup button click
         signupButton.setOnClickListener(v -> signUpUser());
+    }
+
+    private void showDatePickerDialog() {
+        DatePickerDialog datePicker = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    calendar.set(Calendar.YEAR, year);
+                    calendar.set(Calendar.MONTH, month);
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    updateDobInput();
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+        datePicker.show();
+    }
+
+    private void updateDobInput() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        dobButton.setText(dateFormat.format(calendar.getTime()));
     }
 
     private void signUpUser() {
@@ -70,11 +102,13 @@ public class SignupActivity extends AppCompatActivity {
         String email = emailInput.getText().toString().trim();
         String password = passwordInput.getText().toString().trim();
         String phoneNumberStr = phoneNumberInput.getText().toString().trim(); // Phone number input as string
+        String dob = dobButton.getText().toString().trim();
+        String gender = maleRadio.isChecked() ? "Male" : femaleRadio.isChecked() ? "Female" : null;
         String role = donorRadio.isChecked() ? "donor" : siteManagerRadio.isChecked() ? "site_manager" : null;
 
         // Validate common fields
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) ||
-                TextUtils.isEmpty(phoneNumberStr) || role == null) {
+                TextUtils.isEmpty(phoneNumberStr) || TextUtils.isEmpty(dob) || gender == null || role == null) {
             Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -98,9 +132,9 @@ public class SignupActivity extends AppCompatActivity {
                 return;
             }
 
-            createUserInFirebase(new Donor(name, email, phoneNumber, role, bloodType, 0), email, password);
+            createUserInFirebase(new Donor(name, email, phoneNumber, role, calendar.getTime(), gender, bloodType, 0), email, password);
         } else if ("site_manager".equals(role)) {
-            createUserInFirebase(new SiteManager(name, email, phoneNumber, role), email, password);
+            createUserInFirebase(new SiteManager(name, email, phoneNumber, role, calendar.getTime(), gender), email, password);
         }
     }
 

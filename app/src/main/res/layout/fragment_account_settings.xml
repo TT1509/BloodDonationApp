@@ -6,10 +6,18 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Add account setting UI components here -->
     <TextView
+        android:id="@+id/greetingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Account Settings" />
+        android:text="Hello, User"
+        android:textSize="24sp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout" />
 
 </LinearLayout>

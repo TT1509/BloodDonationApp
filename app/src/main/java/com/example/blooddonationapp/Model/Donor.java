@@ -1,5 +1,7 @@
 package com.example.blooddonationapp.Model;
 
+import java.util.Date;
+
 public class Donor extends User {
     private String bloodType;
     private int donationCount;
@@ -9,8 +11,8 @@ public class Donor extends User {
         this.donationCount = 0;
     }
 
-    public Donor(String name, String email, Integer phoneNumber, String role, String bloodType, int donationCount) {
-        super(name, email, phoneNumber, role);
+    public Donor(String name, String email, Integer phoneNumber, String role, Date dateOfBirth, String gender, String bloodType, int donationCount) {
+        super(name, email, phoneNumber, role, dateOfBirth, gender);
         this.bloodType = bloodType;
         this.donationCount = donationCount;
     }
