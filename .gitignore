@@ -43,3 +43,4 @@ output.json
 *.class
 out/
 
+/caches
