@@ -9,7 +9,8 @@
         android:id="@+id/createSiteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Site" />
+        android:text="Create Site"
+        android:layout_gravity="end" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

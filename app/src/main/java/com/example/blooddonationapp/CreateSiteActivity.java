@@ -2,20 +2,27 @@ package com.example.blooddonationapp;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.blooddonationapp.Model.DonationSite;
 import com.example.blooddonationapp.Model.SiteManager;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,16 +30,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CreateSiteActivity extends AppCompatActivity {
 
     private EditText siteNameInput, addressInput, contactInput;
-    private Button dateButton, timeButton, saveSiteButton;
+    private Button dateButton, timeButton, saveSiteButton, selectLocationButton;
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private Date siteDateTime;
+    private double selectedLatitude, selectedLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,7 @@ public class CreateSiteActivity extends AppCompatActivity {
         dateButton = findViewById(R.id.dateButton);
         timeButton = findViewById(R.id.timeButton);
         saveSiteButton = findViewById(R.id.saveSiteButton);
+        selectLocationButton = findViewById(R.id.selectLocationButton);
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -84,6 +91,13 @@ public class CreateSiteActivity extends AppCompatActivity {
             timePickerDialog.show();
         });
 
+        // Select location
+        selectLocationButton.setOnClickListener(v -> {
+            Intent intent = new Intent(CreateSiteActivity.this, LocationPickerActivity.class);
+            locationPickerLauncher.launch(intent);
+        });
+
+        // Save donation site
         saveSiteButton.setOnClickListener(v -> createDonationSite());
     }
 
@@ -91,13 +105,25 @@ public class CreateSiteActivity extends AppCompatActivity {
         siteDateTime = calendar.getTime();
     }
 
+    private final ActivityResultLauncher<Intent> locationPickerLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        selectedLatitude = data.getDoubleExtra("latitude", 0.0);
+                        selectedLongitude = data.getDoubleExtra("longitude", 0.0);
+                        Toast.makeText(this, "Location selected: (" + selectedLatitude + ", " + selectedLongitude + ")", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
     private void createDonationSite() {
         String siteName = siteNameInput.getText().toString().trim();
         String address = addressInput.getText().toString().trim();
         String contact = contactInput.getText().toString().trim();
 
-        if (siteName.isEmpty() || address.isEmpty() || contact.isEmpty() || siteDateTime == null) {
-            Toast.makeText(this, "Please fill in all fields and select date/time", Toast.LENGTH_SHORT).show();
+        if (siteName.isEmpty() || address.isEmpty() || contact.isEmpty() || siteDateTime == null || (selectedLatitude == 0.0 && selectedLongitude == 0.0)) {
+            Toast.makeText(this, "Please fill in all fields, select date/time, and choose a location.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -108,7 +134,9 @@ public class CreateSiteActivity extends AppCompatActivity {
                 siteName,
                 address,
                 siteDateTime,
-                contact
+                contact,
+                selectedLatitude,
+                selectedLongitude
         );
 
         firestore.collection("donation_sites")

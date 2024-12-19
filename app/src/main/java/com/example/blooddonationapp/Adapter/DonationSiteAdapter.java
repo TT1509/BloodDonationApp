@@ -46,7 +46,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
     public void onBindViewHolder(@NonNull SiteViewHolder holder, int position) {
         DonationSite site = siteList.get(position);
         holder.siteName.setText(site.getName());
-        holder.siteLocation.setText(site.getLocation());
+        holder.siteLocation.setText(site.getAddress());
 
         String siteId = siteIds.get(position); // Get corresponding document ID
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();

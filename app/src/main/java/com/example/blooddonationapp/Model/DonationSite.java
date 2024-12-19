@@ -7,9 +7,11 @@ import java.util.List;
 public class DonationSite {
     private String managerId;
     private String name;
-    private String location;
+    private String address;
     private Date dateTime;
     private String contactInfo;
+    private double latitude;
+    private double longitude;
     private List<String> volunteers;
     private List<String> donors;
 
@@ -20,12 +22,14 @@ public class DonationSite {
     }
 
     // Parameterized constructor
-    public DonationSite(String managerId, String name, String location, Date dateTime, String contactInfo) {
+    public DonationSite(String managerId, String name, String address, Date dateTime, String contactInfo, double latitude, double longitude) {
         this.managerId = managerId;
         this.name = name;
-        this.location = location;
+        this.address = address;
         this.dateTime = dateTime;
         this.contactInfo = contactInfo;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.volunteers = new ArrayList<>();
         this.donors = new ArrayList<>();
     }
@@ -46,12 +50,12 @@ public class DonationSite {
         this.name = name;
     }
 
-    public String getLocation() {
-        return location;
+    public String getAddress() {
+        return address;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Date getDateTime() {
@@ -69,6 +73,18 @@ public class DonationSite {
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
     }
+    public double getLatitude() { return latitude; }
+
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
 
     public List<String> getVolunteers() {
         return volunteers;

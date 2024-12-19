@@ -40,6 +40,11 @@
             android:layout_height="wrap_content"
             android:text="Select Time" />
 
+        <Button
+            android:id="@+id/selectLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Donation Site" />
 
         <Button
             android:id="@+id/saveSiteButton"
