@@ -10,24 +10,27 @@ public class DonationSite {
     private String address;
     private Date dateTime;
     private String contactInfo;
+    private List<String> requiredBloodTypes;
     private double latitude;
     private double longitude;
     private List<String> volunteers;
     private List<String> donors;
 
-    // Default constructor for Firebase
+    // Default constructor
     public DonationSite() {
         this.volunteers = new ArrayList<>();
         this.donors = new ArrayList<>();
+        this.requiredBloodTypes = new ArrayList<>();
     }
 
     // Parameterized constructor
-    public DonationSite(String managerId, String name, String address, Date dateTime, String contactInfo, double latitude, double longitude) {
+    public DonationSite(String managerId, String name, String address, Date dateTime, String contactInfo, List<String> requiredBloodTypes, double latitude, double longitude) {
         this.managerId = managerId;
         this.name = name;
         this.address = address;
         this.dateTime = dateTime;
         this.contactInfo = contactInfo;
+        this.requiredBloodTypes = requiredBloodTypes;
         this.latitude = latitude;
         this.longitude = longitude;
         this.volunteers = new ArrayList<>();
@@ -73,9 +76,22 @@ public class DonationSite {
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
     }
-    public double getLatitude() { return latitude; }
 
-    public void setLatitude(double latitude) { this.latitude = latitude; }
+    public List<String> getRequiredBloodTypes() {
+        return requiredBloodTypes;
+    }
+
+    public void setRequiredBloodTypes(List<String> requiredBloodTypes) {
+        this.requiredBloodTypes = requiredBloodTypes;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 
     public double getLongitude() {
         return longitude;
@@ -84,7 +100,6 @@ public class DonationSite {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-
 
     public List<String> getVolunteers() {
         return volunteers;

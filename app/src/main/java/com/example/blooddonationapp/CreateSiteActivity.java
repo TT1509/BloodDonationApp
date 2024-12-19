@@ -5,8 +5,12 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -32,9 +36,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class CreateSiteActivity extends AppCompatActivity {
-
     private EditText siteNameInput, addressInput, contactInput;
-    private Button dateButton, timeButton, saveSiteButton, selectLocationButton;
+    private Button dateButton, timeButton, saveSiteButton, selectLocationButton, selectBloodTypesButton;
+    private LinearLayout bloodTypeLayout;
+    private ArrayList<String> selectedBloodTypes = new ArrayList<>();
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private Date siteDateTime;
@@ -48,10 +53,12 @@ public class CreateSiteActivity extends AppCompatActivity {
         siteNameInput = findViewById(R.id.siteNameInput);
         addressInput = findViewById(R.id.addressInput);
         contactInput = findViewById(R.id.contactInput);
+        selectBloodTypesButton = findViewById(R.id.selectBloodTypesButton);
         dateButton = findViewById(R.id.dateButton);
         timeButton = findViewById(R.id.timeButton);
         saveSiteButton = findViewById(R.id.saveSiteButton);
         selectLocationButton = findViewById(R.id.selectLocationButton);
+        bloodTypeLayout = findViewById(R.id.bloodTypeLayout);
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -97,12 +104,50 @@ public class CreateSiteActivity extends AppCompatActivity {
             locationPickerLauncher.launch(intent);
         });
 
+
+        // Handle the button for blood type selection
+        selectBloodTypesButton.setOnClickListener(v -> toggleBloodTypeSelection());
+
+        // Add checkboxes for each blood type
+        String[] bloodTypes = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+        for (String bloodType : bloodTypes) {
+            CheckBox checkBox = new CheckBox(this);
+            checkBox.setText(bloodType);
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    selectedBloodTypes.add(bloodType);
+                } else {
+                    selectedBloodTypes.remove(bloodType);
+                }
+                updateSelectedBloodTypesButton();
+            });
+            bloodTypeLayout.addView(checkBox);
+        }
+
         // Save donation site
         saveSiteButton.setOnClickListener(v -> createDonationSite());
     }
 
     private void updateSiteDateTime(Calendar calendar) {
         siteDateTime = calendar.getTime();
+    }
+
+    private void toggleBloodTypeSelection() {
+        if (bloodTypeLayout.getVisibility() == View.VISIBLE) {
+            bloodTypeLayout.setVisibility(View.GONE);
+            selectBloodTypesButton.setText("Select Blood Types");
+        } else {
+            bloodTypeLayout.setVisibility(View.VISIBLE);
+            selectBloodTypesButton.setText("Hide Blood Types");
+        }
+    }
+
+    private void updateSelectedBloodTypesButton() {
+        if (selectedBloodTypes.isEmpty()) {
+            selectBloodTypesButton.setText("Select Blood Types");
+        } else {
+            selectBloodTypesButton.setText(String.join(", ", selectedBloodTypes));
+        }
     }
 
     private final ActivityResultLauncher<Intent> locationPickerLauncher =
@@ -122,7 +167,8 @@ public class CreateSiteActivity extends AppCompatActivity {
         String address = addressInput.getText().toString().trim();
         String contact = contactInput.getText().toString().trim();
 
-        if (siteName.isEmpty() || address.isEmpty() || contact.isEmpty() || siteDateTime == null || (selectedLatitude == 0.0 && selectedLongitude == 0.0)) {
+        if (siteName.isEmpty() || address.isEmpty() || contact.isEmpty() || siteDateTime == null ||
+                (selectedLatitude == 0.0 && selectedLongitude == 0.0) || selectedBloodTypes.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields, select date/time, and choose a location.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -135,6 +181,7 @@ public class CreateSiteActivity extends AppCompatActivity {
                 address,
                 siteDateTime,
                 contact,
+                selectedBloodTypes,
                 selectedLatitude,
                 selectedLongitude
         );

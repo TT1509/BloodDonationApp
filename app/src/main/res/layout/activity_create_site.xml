@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,6 +27,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contact Info" />
+
+        <Button
+            android:id="@+id/selectBloodTypesButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Blood Types" />
+
+        <LinearLayout
+            android:id="@+id/bloodTypeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/selectBloodTypesButton"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="10dp">
+        </LinearLayout>
 
         <Button
             android:id="@+id/dateButton"
