@@ -7,6 +7,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.blooddonationapp.Adapter.TabViewAdapter;
 import com.example.blooddonationapp.Fragment.AccountSettingsFragment;
+import com.example.blooddonationapp.Fragment.DonorFragment;
 import com.example.blooddonationapp.Fragment.MapsFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -37,7 +38,7 @@ public class DonorActivity extends AppCompatActivity {
         tabTitles.add("Account Settings");
 
         List<Class<?>> fragmentClasses = new ArrayList<>();
-        fragmentClasses.add(MapsFragment.class);
+        fragmentClasses.add(DonorFragment.class);
         fragmentClasses.add(AccountSettingsFragment.class);
 
         adapter = new TabViewAdapter(this, fragmentClasses);

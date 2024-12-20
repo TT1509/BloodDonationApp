@@ -33,4 +33,10 @@
         android:layout_height="wrap_content"
         android:text="Volunteer" />
 
+    <Button
+        android:id="@+id/donorButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Donor" />
+
 </LinearLayout>
