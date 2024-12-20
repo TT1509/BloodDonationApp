@@ -1,10 +1,11 @@
 package com.example.blooddonationapp.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class DonationSite {
+public class DonationSite implements Serializable {
     private String managerId;
     private String name;
     private String address;

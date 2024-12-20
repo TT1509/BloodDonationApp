@@ -1,6 +1,7 @@
 package com.example.blooddonationapp.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.blooddonationapp.DonationSiteDetailActivity;
 import com.example.blooddonationapp.Model.DonationSite;
 import com.example.blooddonationapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,6 +64,13 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
         DonationSite site = siteList.get(position);
         holder.siteName.setText(site.getName());
         holder.siteLocation.setText(site.getAddress());
+
+        // Set a click listener to open the detail activity
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DonationSiteDetailActivity.class);
+            intent.putExtra("donationSite", site);
+            context.startActivity(intent);
+        });
 
         String siteId = siteIds.get(position); // Get corresponding document ID
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();

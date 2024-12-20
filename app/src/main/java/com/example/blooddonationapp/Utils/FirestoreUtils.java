@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.blooddonationapp.Model.DonationSite;
+import com.example.blooddonationapp.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -93,5 +94,38 @@ public class FirestoreUtils {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         }
     }
+
+    public interface ManagerDetailsCallback {
+        void onSuccess(User manager);
+        void onFailure(String errorMessage);
+    }
+
+    public static void fetchManagerDetails(String managerId, ManagerDetailsCallback callback) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        firestore.collection("users")
+                .document(managerId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            User manager = document.toObject(User.class);
+                            if (manager != null) {
+                                callback.onSuccess(manager);
+                            } else {
+                                callback.onFailure("Manager data is null");
+                            }
+                        } else {
+                            callback.onFailure("Manager document does not exist");
+                        }
+                    } else {
+                        callback.onFailure("Error fetching manager details: " + (task.getException() != null
+                                ? task.getException().getMessage()
+                                : "Unknown error"));
+                    }
+                });
+    }
+
 }
 

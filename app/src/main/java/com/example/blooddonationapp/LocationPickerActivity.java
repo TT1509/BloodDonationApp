@@ -32,7 +32,7 @@ import java.util.List;
 public class LocationPickerActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private LatLng selectedLocation; // For storing the selected location
+    private LatLng selectedLocation;
     private Button confirmLocationButton, searchLocationButton, focusLocationButton;
     private FusedLocationProviderClient fusedLocationClient;
 
