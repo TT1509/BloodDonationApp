@@ -48,3 +48,4 @@ out/
 /native
 /daemon
 /.idea
+*.bin
