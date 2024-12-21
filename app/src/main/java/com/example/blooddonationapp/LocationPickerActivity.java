@@ -43,7 +43,7 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
 
         confirmLocationButton = findViewById(R.id.confirmLocationButton);
         searchLocationButton = findViewById(R.id.searchLocationButton);
-        focusLocationButton = findViewById(R.id.focusLocationButton);  // Button to focus on current location
+        focusLocationButton = findViewById(R.id.focusLocationButton);
         confirmLocationButton.setEnabled(false);
 
         // Initialize the Places API

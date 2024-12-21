@@ -28,6 +28,7 @@ public class DonorActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
+        viewPager.setUserInputEnabled(false);
 
         setupTabs();
     }
@@ -35,10 +36,12 @@ public class DonorActivity extends AppCompatActivity {
     private void setupTabs() {
         List<String> tabTitles = new ArrayList<>();
         tabTitles.add("Main Page");
+        tabTitles.add("Maps");
         tabTitles.add("Account Settings");
 
         List<Class<?>> fragmentClasses = new ArrayList<>();
         fragmentClasses.add(DonorFragment.class);
+        fragmentClasses.add(MapsFragment.class);
         fragmentClasses.add(AccountSettingsFragment.class);
 
         adapter = new TabViewAdapter(this, fragmentClasses);

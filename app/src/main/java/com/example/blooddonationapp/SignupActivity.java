@@ -1,6 +1,7 @@
 package com.example.blooddonationapp;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,6 +39,7 @@ public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
     private Calendar calendar;
+    private TextView loginLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,7 @@ public class SignupActivity extends AppCompatActivity {
         maleRadio = findViewById(R.id.maleRadio);
         femaleRadio = findViewById(R.id.femaleRadio);
         signupButton = findViewById(R.id.signupButton);
+        loginLink = findViewById(R.id.loginLink);
 
         auth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
@@ -74,6 +78,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
         signupButton.setOnClickListener(v -> signUpUser());
+        loginLink.setOnClickListener(v -> startActivity(new Intent(SignupActivity.this, LoginActivity.class)));
     }
 
     private void showDatePickerDialog() {

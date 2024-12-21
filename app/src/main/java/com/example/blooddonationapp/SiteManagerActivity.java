@@ -26,6 +26,7 @@ public class SiteManagerActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
+        viewPager.setUserInputEnabled(false);
 
         setupTabs();
     }
