@@ -134,20 +134,29 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            Place place = Autocomplete.getPlaceFromIntent(data);
-            if (place.getLatLng() != null) {
-                selectedLocation = place.getLatLng();
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(selectedLocation).title(place.getName()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation, 15));
-                confirmLocationButton.setEnabled(true); // Enable button after search
-                Toast.makeText(this, "Location selected: " + place.getName(), Toast.LENGTH_SHORT).show();
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                // User selected a place
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                if (place.getLatLng() != null) {
+                    selectedLocation = place.getLatLng();
+                    mMap.clear();
+                    mMap.addMarker(new MarkerOptions().position(selectedLocation).title(place.getName()));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation, 15));
+                    confirmLocationButton.setEnabled(true); // Enable button after search
+                    Toast.makeText(this, "Location selected: " + place.getName(), Toast.LENGTH_SHORT).show();
+                }
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // Handle the error returned by Autocomplete
+                com.google.android.gms.common.api.Status status = Autocomplete.getStatusFromIntent(data);
+                Toast.makeText(this, "Error: " + status.getStatusMessage(), Toast.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                // User canceled the operation
+                Toast.makeText(this, "Search canceled", Toast.LENGTH_SHORT).show();
             }
-        } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-            Toast.makeText(this, "Error while searching for location.", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     // Handle permissions result
     @Override
