@@ -32,8 +32,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Button focusLocationButton;
-
-    // List to hold markers for donation sites
     private final List<Marker> donationSiteMarkers = new ArrayList<>();
 
     @Override
@@ -64,33 +62,48 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Check for location permissions
+        // Display donation site location
+        if (getArguments() != null) {
+            double latitude = getArguments().getDouble("latitude", 0.0);
+            double longitude = getArguments().getDouble("longitude", 0.0);
+            String siteName = getArguments().getString("siteName", "Donation Site");
+
+            LatLng siteLocation = new LatLng(latitude, longitude);
+            mMap.addMarker(new MarkerOptions().position(siteLocation).title(siteName));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(siteLocation, 15));
+        }
+
+        // Enable current location if permissions are granted
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
             mMap.setMyLocationEnabled(true);
 
-            // Get the user's current location
+            // Optionally show the user's current location
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(location -> {
                         if (location != null) {
-                            moveToUserLocation(location);
-                        } else {
-                            LatLng defaultLocation = new LatLng(-34, 151);
-                            mMap.addMarker(new MarkerOptions().position(defaultLocation).title("Default Location"));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10));
+                            LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.addMarker(new MarkerOptions().position(userLocation).title("Your Location"));
                         }
                     })
-                    .addOnFailureListener(e -> {
-                        e.printStackTrace();
-                    });
-
-            // Load donation site markers
-            loadDonationSites();
+                    .addOnFailureListener(e -> e.printStackTrace());
         } else {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
+
+        // Optionally load additional donation site markers
+        loadDonationSites();
     }
+
+
+    public void focusOnLocation(LatLng location, String title) {
+        if (mMap != null) {
+            mMap.clear();
+            mMap.addMarker(new MarkerOptions().position(location).title(title));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+        }
+    }
+
 
     private void moveToUserLocation(@NonNull Location location) {
         LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());

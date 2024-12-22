@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.blooddonationapp.Fragment.MapsFragment;
 import com.example.blooddonationapp.Model.DonationSite;
 import com.example.blooddonationapp.Model.User;
 import com.example.blooddonationapp.Utils.FirestoreUtils;
@@ -43,6 +44,19 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
             siteDate.setText("Date & Time Start: " + site.getDateTime().toString());
             siteContact.setText("Contact Info: " + site.getContactInfo());
             fetchAndDisplayManagerDetails(site.getManagerId());
+
+            // Initialize MapsFragment and pass the latitude and longitude
+            MapsFragment mapsFragment = new MapsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putDouble("latitude", site.getLatitude());
+            bundle.putDouble("longitude", site.getLongitude());
+            bundle.putString("siteName", site.getName());
+            mapsFragment.setArguments(bundle);
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.mapFragmentContainer, mapsFragment)
+                    .commit();
         } else {
             Toast.makeText(this, "Error loading site details", Toast.LENGTH_SHORT).show();
         }
