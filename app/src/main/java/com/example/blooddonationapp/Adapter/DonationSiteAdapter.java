@@ -2,6 +2,7 @@ package com.example.blooddonationapp.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +13,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blooddonationapp.DonationSiteDetailActivity;
+import com.example.blooddonationapp.Fragment.addOtherDonorsFragment;
 import com.example.blooddonationapp.Model.DonationSite;
 import com.example.blooddonationapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -89,11 +94,28 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
 
                     if (mode == MODE_DONOR) {
                         holder.volunteerButton.setVisibility(View.GONE);
-                        holder.donorButton.setVisibility(View.VISIBLE); // Ensure the button is visible in donor mode
+                        holder.donorButton.setVisibility(View.VISIBLE);
+                        holder.othersDonorButton.setVisibility(View.VISIBLE);
+                        holder.othersDonorButton.setText("Add Others");
                         setupDonorButton(holder, siteId, currentUserId, donors, documentSnapshot.get("requiredBloodTypes"), donorBloodType);
+
+                        holder.othersDonorButton.setOnClickListener(v -> {
+                            addOtherDonorsFragment fragment = new addOtherDonorsFragment();
+
+                            // Pass siteId as an argument
+                            Bundle args = new Bundle();
+                            args.putString("siteId", siteId);
+                            fragment.setArguments(args);
+
+                            // Show the fragment
+                            fragment.show(((FragmentActivity) context).getSupportFragmentManager(), "addOtherDonorsFragment");
+                        });
+
+
                     } else {
                         holder.volunteerButton.setVisibility(View.VISIBLE);
-                        holder.donorButton.setVisibility(View.GONE); // Hide donor button in site manager mode
+                        holder.donorButton.setVisibility(View.GONE);
+                        holder.othersDonorButton.setVisibility(View.GONE);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -221,7 +243,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
 
     static class SiteViewHolder extends RecyclerView.ViewHolder {
         TextView siteName, siteLocation, siteDate;
-        Button volunteerButton, donorButton;
+        Button volunteerButton, donorButton, othersDonorButton;
 
         public SiteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -230,6 +252,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
             siteDate = itemView.findViewById(R.id.siteDate);
             volunteerButton = itemView.findViewById(R.id.volunteerButton);
             donorButton = itemView.findViewById(R.id.donorButton);
+            othersDonorButton = itemView.findViewById(R.id.othersDonorButton);
         }
     }
 }

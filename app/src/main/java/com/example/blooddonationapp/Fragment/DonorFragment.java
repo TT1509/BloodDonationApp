@@ -47,8 +47,7 @@ public class DonorFragment extends Fragment {
 
         return view;
     }
-
-
+    
     private void loadDonorBloodType() {
         FirestoreUtils.loadDonorBloodType(getContext(), donorBloodType -> {
             if (donorBloodType != null) {
