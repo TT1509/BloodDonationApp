@@ -19,9 +19,7 @@ import java.util.Locale;
 public class DonationSiteDetailActivity extends AppCompatActivity {
 
     private TextView siteName, siteLocation, siteDescription, siteDate, siteStartTime, siteEndTime, siteContact;
-    private TextView managerNameTextView;
-    private TextView managerEmailTextView;
-    private TextView managerPhoneTextView;
+    private TextView managerNameTextView, managerEmailTextView, managerPhoneTextView;
 
     private FirebaseFirestore firestore;
     @Override
