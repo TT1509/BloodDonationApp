@@ -36,7 +36,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class CreateSiteActivity extends AppCompatActivity {
-    private EditText siteNameInput, addressInput, contactInput;
+    private EditText siteNameInput, addressInput, contactInput, defaultVolumeInput;
     private Button dateButton, timeButton, saveSiteButton, selectLocationButton, selectBloodTypesButton;
     private LinearLayout bloodTypeLayout;
     private ArrayList<String> selectedBloodTypes = new ArrayList<>();
@@ -53,6 +53,7 @@ public class CreateSiteActivity extends AppCompatActivity {
         siteNameInput = findViewById(R.id.siteNameInput);
         addressInput = findViewById(R.id.addressInput);
         contactInput = findViewById(R.id.contactInput);
+        defaultVolumeInput = findViewById(R.id.defaultVolumeInput);
         selectBloodTypesButton = findViewById(R.id.selectBloodTypesButton);
         dateButton = findViewById(R.id.dateButton);
         timeButton = findViewById(R.id.timeButton);
@@ -166,10 +167,24 @@ public class CreateSiteActivity extends AppCompatActivity {
         String siteName = siteNameInput.getText().toString().trim();
         String address = addressInput.getText().toString().trim();
         String contact = contactInput.getText().toString().trim();
+        String defaultVolumeStr = defaultVolumeInput.getText().toString().trim();
 
         if (siteName.isEmpty() || address.isEmpty() || contact.isEmpty() || siteDateTime == null ||
-                (selectedLatitude == 0.0 && selectedLongitude == 0.0) || selectedBloodTypes.isEmpty()) {
+                (selectedLatitude == 0.0 && selectedLongitude == 0.0) || selectedBloodTypes.isEmpty() ||
+                defaultVolumeStr.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields, select date/time, and choose a location.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int defaultBloodVolume;
+        try {
+            defaultBloodVolume = Integer.parseInt(defaultVolumeStr);
+            if (defaultBloodVolume < 350 || defaultBloodVolume > 500) {
+                Toast.makeText(this, "Default blood volume must be between 350 and 500 ml.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Please enter a valid blood volume.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -183,17 +198,13 @@ public class CreateSiteActivity extends AppCompatActivity {
                 contact,
                 selectedBloodTypes,
                 selectedLatitude,
-                selectedLongitude
+                selectedLongitude,
+                defaultBloodVolume
         );
 
         firestore.collection("donation_sites")
                 .add(site)
                 .addOnSuccessListener(documentReference -> {
-                    // After the site is created, get the created site's ID
-                    String donationSiteId = documentReference.getId();
-                    // Call the method to add this site ID to the SiteManager's managedSites list
-                    addDonationSiteToManager(managerId, donationSiteId);
-
                     Toast.makeText(CreateSiteActivity.this, "Site created successfully!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
@@ -201,6 +212,7 @@ public class CreateSiteActivity extends AppCompatActivity {
                     Toast.makeText(CreateSiteActivity.this, "Failed to create site: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void addDonationSiteToManager(String managerId, String donationSiteId) {
         // Reference to the SiteManager document in Firestore

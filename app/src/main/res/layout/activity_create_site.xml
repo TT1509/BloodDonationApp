@@ -28,6 +28,14 @@
             android:layout_height="wrap_content"
             android:hint="Contact Info" />
 
+        <EditText
+            android:id="@+id/defaultVolumeInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Default Blood Volume (ml)"
+            android:inputType="number" />
+
+
         <Button
             android:id="@+id/selectBloodTypesButton"
             android:layout_width="match_parent"

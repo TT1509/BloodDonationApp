@@ -31,7 +31,7 @@ import java.util.Locale;
 public class SignupActivity extends AppCompatActivity {
 
     private Spinner bloodTypeSpinner;
-    private EditText nameInput, emailInput, passwordInput, phoneNumberInput;
+    private EditText nameInput, emailInput, passwordInput, phoneNumberInput, heightInput, weightInput;
     private RadioGroup roleGroup, genderGroup;
     private RadioButton donorRadio, siteManagerRadio, maleRadio, femaleRadio;
     private Button signupButton, dobButton;
@@ -52,6 +52,8 @@ public class SignupActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.passwordInput);
         phoneNumberInput = findViewById(R.id.phoneNumberInput);
         dobButton = findViewById(R.id.dobButton);
+        heightInput = findViewById(R.id.heightInput);
+        weightInput = findViewById(R.id.weightInput);
         bloodTypeSpinner = findViewById(R.id.bloodTypeSpinner);
         roleGroup = findViewById(R.id.roleGroup);
         donorRadio = findViewById(R.id.donorRadio);
@@ -110,6 +112,8 @@ public class SignupActivity extends AppCompatActivity {
         String dob = dobButton.getText().toString().trim();
         String gender = maleRadio.isChecked() ? "Male" : femaleRadio.isChecked() ? "Female" : null;
         String role = donorRadio.isChecked() ? "donor" : siteManagerRadio.isChecked() ? "site_manager" : null;
+        String heightStr = heightInput.getText().toString().trim();
+        String weightStr = weightInput.getText().toString().trim();
 
         // Validate common fields
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) ||
@@ -130,9 +134,37 @@ public class SignupActivity extends AppCompatActivity {
             age--;
         }
 
-        if (age < 18) {
-            Toast.makeText(this, "You must be at least 18 years old to sign up.", Toast.LENGTH_SHORT).show();
+        if (age < 18 || age > 65) {
+            Toast.makeText(this, "Your age must be higher than 18 years old and below 65 years old.", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        double height = 0;
+        double weight = 0;
+
+        if ("donor".equals(role)) {
+            if (TextUtils.isEmpty(heightStr) || TextUtils.isEmpty(weightStr)) {
+                Toast.makeText(this, "Please enter your height and weight", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                height = Double.parseDouble(heightStr);
+                weight = Double.parseDouble(weightStr);
+
+                if (height <= 0 || height > 300) {
+                    Toast.makeText(this, "Height must be below 300 cm", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (weight <= 50) {
+                    Toast.makeText(this, "Weight must be above 50 kg", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid height or weight value", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         // Parse phone number
@@ -144,9 +176,7 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        // Handle specialized attributes
         if ("donor".equals(role)) {
-            Spinner bloodTypeSpinner = findViewById(R.id.bloodTypeSpinner);
             String bloodType = bloodTypeSpinner.getSelectedItem().toString();
 
             if (TextUtils.isEmpty(bloodType)) {
@@ -154,7 +184,7 @@ public class SignupActivity extends AppCompatActivity {
                 return;
             }
 
-            createUserInFirebase(new Donor(name, email, phoneNumber, role, calendar.getTime(), gender, bloodType, 0), email, password);
+            createUserInFirebase(new Donor(name, email, phoneNumber, role, calendar.getTime(), gender, bloodType, 0, height, weight), email, password);
         } else if ("site_manager".equals(role)) {
             createUserInFirebase(new SiteManager(name, email, phoneNumber, role, calendar.getTime(), gender), email, password);
         }
