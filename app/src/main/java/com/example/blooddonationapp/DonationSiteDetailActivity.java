@@ -13,9 +13,12 @@ import com.example.blooddonationapp.Model.User;
 import com.example.blooddonationapp.Utils.FirestoreUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class DonationSiteDetailActivity extends AppCompatActivity {
 
-    private TextView siteName, siteLocation, siteDescription, siteDate, siteContact;
+    private TextView siteName, siteLocation, siteDescription, siteDate, siteStartTime, siteEndTime, siteContact;
     private TextView managerNameTextView;
     private TextView managerEmailTextView;
     private TextView managerPhoneTextView;
@@ -30,6 +33,8 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
         siteLocation = findViewById(R.id.siteLocation);
         siteDescription = findViewById(R.id.siteDescription);
         siteDate = findViewById(R.id.siteDate);
+        siteStartTime = findViewById(R.id.siteStartTime);
+        siteEndTime = findViewById(R.id.siteEndTime);
         siteContact = findViewById(R.id.siteContact);
         managerNameTextView = findViewById(R.id.manager_name);
         managerEmailTextView = findViewById(R.id.manager_email);
@@ -41,7 +46,13 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
             siteName.setText("Donation Site Name: " + site.getName());
             siteLocation.setText("Address: " + site.getAddress());
             siteDescription.setText("Required Blood Types: " + site.getRequiredBloodTypes());
-            siteDate.setText("Date & Time Start: " + site.getDateTime().toString());
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+            siteDate.setText("Date: " + dateFormat.format(site.getDate()));
+            siteStartTime.setText("Start Time: " + timeFormat.format(site.getStartTime()));
+            siteEndTime.setText("End Time: " + timeFormat.format(site.getEndTime()));
             siteContact.setText("Contact Info: " + site.getContactInfo());
             fetchAndDisplayManagerDetails(site.getManagerId());
 

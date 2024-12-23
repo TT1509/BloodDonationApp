@@ -60,10 +60,16 @@
             android:text="Select Date" />
 
         <Button
-            android:id="@+id/timeButton"
+            android:id="@+id/startTimeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Time" />
+            android:text="Select Start Time" />
+
+        <Button
+            android:id="@+id/endTimeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select End Time" />
 
         <Button
             android:id="@+id/selectLocationButton"

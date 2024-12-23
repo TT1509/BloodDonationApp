@@ -37,12 +37,13 @@ import java.util.Date;
 
 public class CreateSiteActivity extends AppCompatActivity {
     private EditText siteNameInput, addressInput, contactInput, defaultVolumeInput;
-    private Button dateButton, timeButton, saveSiteButton, selectLocationButton, selectBloodTypesButton;
+    private Button dateButton, startTimeButton, endTimeButton, saveSiteButton, selectLocationButton, selectBloodTypesButton;
     private LinearLayout bloodTypeLayout;
     private ArrayList<String> selectedBloodTypes = new ArrayList<>();
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
-    private Date siteDateTime;
+    private Date siteDate;
+    private String siteStartTime, siteEndTime;
     private double selectedLatitude, selectedLongitude;
 
     @Override
@@ -56,7 +57,8 @@ public class CreateSiteActivity extends AppCompatActivity {
         defaultVolumeInput = findViewById(R.id.defaultVolumeInput);
         selectBloodTypesButton = findViewById(R.id.selectBloodTypesButton);
         dateButton = findViewById(R.id.dateButton);
-        timeButton = findViewById(R.id.timeButton);
+        startTimeButton = findViewById(R.id.startTimeButton);
+        endTimeButton = findViewById(R.id.endTimeButton);
         saveSiteButton = findViewById(R.id.saveSiteButton);
         selectLocationButton = findViewById(R.id.selectLocationButton);
         bloodTypeLayout = findViewById(R.id.bloodTypeLayout);
@@ -72,7 +74,7 @@ public class CreateSiteActivity extends AppCompatActivity {
                     this,
                     (view, year, month, dayOfMonth) -> {
                         calendar.set(year, month, dayOfMonth);
-                        updateSiteDateTime(calendar);
+                        siteDate = calendar.getTime();
                         dateButton.setText(String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year));
                     },
                     calendar.get(Calendar.YEAR),
@@ -82,15 +84,28 @@ public class CreateSiteActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
 
-        // Time picker
-        timeButton.setOnClickListener(v -> {
+        // Start time picker
+        startTimeButton.setOnClickListener(v -> {
             TimePickerDialog timePickerDialog = new TimePickerDialog(
                     this,
                     (view, hourOfDay, minute) -> {
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        calendar.set(Calendar.MINUTE, minute);
-                        updateSiteDateTime(calendar);
-                        timeButton.setText(String.format("%02d:%02d", hourOfDay, minute));
+                        siteStartTime = String.format("%02d:%02d", hourOfDay, minute);
+                        startTimeButton.setText(siteStartTime);
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true
+            );
+            timePickerDialog.show();
+        });
+
+        // End time picker
+        endTimeButton.setOnClickListener(v -> {
+            TimePickerDialog timePickerDialog = new TimePickerDialog(
+                    this,
+                    (view, hourOfDay, minute) -> {
+                        siteEndTime = String.format("%02d:%02d", hourOfDay, minute);
+                        endTimeButton.setText(siteEndTime);
                     },
                     calendar.get(Calendar.HOUR_OF_DAY),
                     calendar.get(Calendar.MINUTE),
@@ -104,7 +119,6 @@ public class CreateSiteActivity extends AppCompatActivity {
             Intent intent = new Intent(CreateSiteActivity.this, LocationPickerActivity.class);
             locationPickerLauncher.launch(intent);
         });
-
 
         // Handle the button for blood type selection
         selectBloodTypesButton.setOnClickListener(v -> toggleBloodTypeSelection());
@@ -127,10 +141,6 @@ public class CreateSiteActivity extends AppCompatActivity {
 
         // Save donation site
         saveSiteButton.setOnClickListener(v -> createDonationSite());
-    }
-
-    private void updateSiteDateTime(Calendar calendar) {
-        siteDateTime = calendar.getTime();
     }
 
     private void toggleBloodTypeSelection() {
@@ -169,7 +179,8 @@ public class CreateSiteActivity extends AppCompatActivity {
         String contact = contactInput.getText().toString().trim();
         String defaultVolumeStr = defaultVolumeInput.getText().toString().trim();
 
-        if (siteName.isEmpty() || address.isEmpty() || contact.isEmpty() || siteDateTime == null ||
+        if (siteName.isEmpty() || address.isEmpty() || contact.isEmpty() || siteDate == null ||
+                siteStartTime == null || siteEndTime == null ||
                 (selectedLatitude == 0.0 && selectedLongitude == 0.0) || selectedBloodTypes.isEmpty() ||
                 defaultVolumeStr.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields, select date/time, and choose a location.", Toast.LENGTH_SHORT).show();
@@ -194,7 +205,9 @@ public class CreateSiteActivity extends AppCompatActivity {
                 managerId,
                 siteName,
                 address,
-                siteDateTime,
+                siteDate,
+                siteStartTime,
+                siteEndTime,
                 contact,
                 selectedBloodTypes,
                 selectedLatitude,
@@ -212,39 +225,5 @@ public class CreateSiteActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(CreateSiteActivity.this, "Failed to create site: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-    }
-
-
-    private void addDonationSiteToManager(String managerId, String donationSiteId) {
-        // Reference to the SiteManager document in Firestore
-        DocumentReference managerDocRef = firestore.collection("users").document(managerId);
-
-        // Get the current SiteManager data and add the new site ID to their managedSites list
-        managerDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                SiteManager siteManager = documentSnapshot.toObject(SiteManager.class);
-
-                if (siteManager != null) {
-                    // Initialize the managedSites list if it's null
-                    if (siteManager.getManagedSites() == null) {
-                        siteManager.setManagedSites(new ArrayList<>());
-                    }
-
-                    // Add the donation site ID to the manager's list of managed sites
-                    siteManager.addManagedSite(donationSiteId);
-
-                    // Update the SiteManager document with the new managedSites list
-                    managerDocRef.update("managedSites", siteManager.getManagedSites())
-                            .addOnSuccessListener(aVoid -> {
-                                Log.d("CreateSiteActivity", "Site ID added to manager's managedSites list.");
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e("CreateSiteActivity", "Failed to update manager's managedSites list: " + e.getMessage());
-                            });
-                }
-            }
-        }).addOnFailureListener(e -> {
-            Log.e("CreateSiteActivity", "Error fetching manager data: " + e.getMessage());
-        });
     }
 }

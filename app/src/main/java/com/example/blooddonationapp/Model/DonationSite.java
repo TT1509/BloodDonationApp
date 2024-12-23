@@ -9,7 +9,9 @@ public class DonationSite implements Serializable {
     private String managerId;
     private String name;
     private String address;
-    private Date dateTime;
+    private Date date;
+    private String startTime;
+    private String endTime;
     private String contactInfo;
     private List<String> requiredBloodTypes;
     private double latitude;
@@ -28,11 +30,13 @@ public class DonationSite implements Serializable {
     }
 
     // Parameterized constructor
-    public DonationSite(String managerId, String name, String address, Date dateTime, String contactInfo, List<String> requiredBloodTypes, double latitude, double longitude, int defaultBloodVolume, String state) {
+    public DonationSite(String managerId, String name, String address, Date date, String startTime, String endTime, String contactInfo, List<String> requiredBloodTypes, double latitude, double longitude, int defaultBloodVolume, String state) {
         this.managerId = managerId;
         this.name = name;
         this.address = address;
-        this.dateTime = dateTime;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.contactInfo = contactInfo;
         this.requiredBloodTypes = requiredBloodTypes;
         this.latitude = latitude;
@@ -68,12 +72,28 @@ public class DonationSite implements Serializable {
         this.address = address;
     }
 
-    public Date getDateTime() {
-        return dateTime;
+    public Date getDate() {
+        return date;
     }
 
-    public void setDateTime(Date dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 
     public String getContactInfo() {

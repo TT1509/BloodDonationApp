@@ -43,6 +43,20 @@
             android:layout_marginBottom="8dp" />
 
         <TextView
+            android:id="@+id/siteStartTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start Time"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/siteEndTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="End Time"
+            android:textSize="16sp" />
+
+        <TextView
             android:id="@+id/siteContact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
