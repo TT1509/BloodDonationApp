@@ -199,7 +199,8 @@ public class CreateSiteActivity extends AppCompatActivity {
                 selectedBloodTypes,
                 selectedLatitude,
                 selectedLongitude,
-                defaultBloodVolume
+                defaultBloodVolume,
+                "Ongoing"
         );
 
         firestore.collection("donation_sites")

@@ -45,4 +45,12 @@
         android:layout_height="wrap_content"
         android:text="Donor" />
 
+    <Button
+        android:id="@+id/finishDonationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finish Donation"
+        android:visibility="gone" />
+
+
 </LinearLayout>

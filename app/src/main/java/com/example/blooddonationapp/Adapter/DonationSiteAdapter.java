@@ -70,6 +70,18 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
         holder.siteName.setText(site.getName());
         holder.siteLocation.setText(site.getAddress());
 
+        // Reset all buttons and visibility to default state
+        holder.volunteerButton.setVisibility(View.VISIBLE);
+        holder.volunteerButton.setEnabled(true);
+        holder.volunteerButton.setText("Volunteer");
+
+        holder.donorButton.setVisibility(View.GONE);
+        holder.donorButton.setEnabled(true);
+        holder.donorButton.setText("Donate");
+
+        holder.othersDonorButton.setVisibility(View.GONE);
+        holder.finishDonationButton.setVisibility(View.GONE);
+
         // Set a click listener to open the detail activity
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DonationSiteDetailActivity.class);
@@ -77,10 +89,21 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
             context.startActivity(intent);
         });
 
-        String siteId = siteIds.get(position); // Get corresponding document ID
+        String siteId = siteIds.get(position);
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Check the state of the donation site
+        if ("Done".equals(site.getState())) {
+            holder.volunteerButton.setText("Closed");
+            holder.volunteerButton.setEnabled(false);
+            holder.donorButton.setText("Closed");
+            holder.donorButton.setEnabled(false);
+            holder.othersDonorButton.setVisibility(View.GONE);
+            holder.finishDonationButton.setVisibility(View.GONE);
+            return;
+        }
 
         // Fetch data for the specific site
         firestore.collection("donation_sites").document(siteId)
@@ -94,6 +117,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
 
                     if (mode == MODE_DONOR) {
                         holder.volunteerButton.setVisibility(View.GONE);
+                        holder.finishDonationButton.setVisibility(View.GONE);
                         holder.donorButton.setVisibility(View.VISIBLE);
                         holder.othersDonorButton.setVisibility(View.VISIBLE);
                         holder.othersDonorButton.setText("Add Others");
@@ -116,6 +140,20 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
                         holder.volunteerButton.setVisibility(View.VISIBLE);
                         holder.donorButton.setVisibility(View.GONE);
                         holder.othersDonorButton.setVisibility(View.GONE);
+                        holder.finishDonationButton.setVisibility(View.VISIBLE);
+                        holder.finishDonationButton.setOnClickListener(v -> {
+                            // Update the state of the site to "Done"
+                            firestore.collection("donation_sites").document(siteId)
+                                    .update("state", "Done")
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(context, "Donation site marked as Done.", Toast.LENGTH_SHORT).show();
+                                        site.setState("Done");
+                                        notifyItemChanged(position);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(context, "Failed to mark as Done: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        });
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -243,7 +281,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
 
     static class SiteViewHolder extends RecyclerView.ViewHolder {
         TextView siteName, siteLocation, siteDate;
-        Button volunteerButton, donorButton, othersDonorButton;
+        Button volunteerButton, donorButton, othersDonorButton, finishDonationButton;
 
         public SiteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -253,6 +291,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
             volunteerButton = itemView.findViewById(R.id.volunteerButton);
             donorButton = itemView.findViewById(R.id.donorButton);
             othersDonorButton = itemView.findViewById(R.id.othersDonorButton);
+            finishDonationButton = itemView.findViewById(R.id.finishDonationButton);
         }
     }
 }

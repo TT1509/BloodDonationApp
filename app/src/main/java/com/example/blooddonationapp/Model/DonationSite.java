@@ -17,16 +17,18 @@ public class DonationSite implements Serializable {
     private List<String> volunteers;
     private List<String> donors;
     private int defaultBloodVolume;
+    private String state;
 
     // Default constructor
     public DonationSite() {
         this.volunteers = new ArrayList<>();
         this.donors = new ArrayList<>();
         this.requiredBloodTypes = new ArrayList<>();
+        this.state = "Ongoing";
     }
 
     // Parameterized constructor
-    public DonationSite(String managerId, String name, String address, Date dateTime, String contactInfo, List<String> requiredBloodTypes, double latitude, double longitude, int defaultBloodVolume) {
+    public DonationSite(String managerId, String name, String address, Date dateTime, String contactInfo, List<String> requiredBloodTypes, double latitude, double longitude, int defaultBloodVolume, String state) {
         this.managerId = managerId;
         this.name = name;
         this.address = address;
@@ -38,6 +40,7 @@ public class DonationSite implements Serializable {
         this.volunteers = new ArrayList<>();
         this.donors = new ArrayList<>();
         this.defaultBloodVolume = defaultBloodVolume;
+        this.state = state;
     }
 
     // Getters and Setters
@@ -127,5 +130,13 @@ public class DonationSite implements Serializable {
 
     public void setDefaultBloodVolume(int defaultBloodVolume) {
         this.defaultBloodVolume = defaultBloodVolume;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }
