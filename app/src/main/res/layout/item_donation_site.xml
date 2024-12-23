@@ -52,5 +52,13 @@
         android:text="Finish Donation"
         android:visibility="gone" />
 
+    <Button
+        android:id="@+id/generateReportButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate Report"
+        android:visibility="gone" />
+
+
 
 </LinearLayout>

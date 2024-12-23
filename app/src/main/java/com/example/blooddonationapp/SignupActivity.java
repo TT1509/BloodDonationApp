@@ -157,7 +157,7 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (weight <= 50) {
+                if (weight < 50) {
                     Toast.makeText(this, "Weight must be above 50 kg", Toast.LENGTH_SHORT).show();
                     return;
                 }
