@@ -38,10 +38,9 @@ public class DonorFragment extends Fragment {
         searchView = view.findViewById(R.id.searchView);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         siteList = new ArrayList<>();
-        loadDonorBloodType();
 
+        loadDonorBloodType();
         setupSearchView();
         return view;
     }
@@ -66,7 +65,6 @@ public class DonorFragment extends Fragment {
             this.siteList.clear();
             this.siteList.addAll(siteList);
 
-            // Initially show all sites in the filtered list
             filteredList.clear();
             filteredList.addAll(siteList);
 
