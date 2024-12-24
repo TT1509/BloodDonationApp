@@ -1,6 +1,7 @@
 package com.example.blooddonationapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import com.example.blooddonationapp.Utils.FirestoreUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class DonationSiteDetailActivity extends AppCompatActivity {
@@ -46,11 +48,30 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
             siteDescription.setText("Required Blood Types: " + site.getRequiredBloodTypes());
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            SimpleDateFormat inputTimeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            SimpleDateFormat outputTimeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
 
             siteDate.setText("Date: " + dateFormat.format(site.getDate()));
-            siteStartTime.setText("Start Time: " + timeFormat.format(site.getStartTime()));
-            siteEndTime.setText("End Time: " + timeFormat.format(site.getEndTime()));
+            try {
+                // Format start time
+                if (site.getStartTime() != null) {
+                    Date startTime = inputTimeFormat.parse(site.getStartTime());
+                    siteStartTime.setText("Start Time: " + (startTime != null ? outputTimeFormat.format(startTime) : "Not Available"));
+                } else {
+                    siteStartTime.setText("Start Time: Not Available");
+                }
+
+                // Format end time
+                if (site.getEndTime() != null) {
+                    Date endTime = inputTimeFormat.parse(site.getEndTime());
+                    siteEndTime.setText("End Time: " + (endTime != null ? outputTimeFormat.format(endTime) : "Not Available"));
+                } else {
+                    siteEndTime.setText("End Time: Not Available");
+                }
+            } catch (Exception e) {
+                Log.e("DonationSiteDetail", "Error formatting start/end time", e);
+                Toast.makeText(this, "Error formatting start/end time", Toast.LENGTH_SHORT).show();
+            }
             siteContact.setText("Contact Info: " + site.getContactInfo());
             fetchAndDisplayManagerDetails(site.getManagerId());
 

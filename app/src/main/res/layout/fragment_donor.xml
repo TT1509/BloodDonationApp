@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Search View -->
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
@@ -14,11 +14,99 @@
         android:queryHint="Search Donation Sites"
         android:layout_marginBottom="8dp" />
 
-    <!-- Recycler View -->
+    <ImageView
+        android:id="@+id/filterIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_filter"
+        android:contentDescription="Filter Icon"
+        android:padding="8dp"
+        android:layout_gravity="end" />
+
+    <LinearLayout
+        android:id="@+id/filterContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:padding="8dp">
+
+        <!-- Checkboxes for Blood Type -->
+        <CheckBox
+            android:id="@+id/checkBoxA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A+" />
+
+        <CheckBox
+            android:id="@+id/checkBoxAMinute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A-" />
+
+        <CheckBox
+            android:id="@+id/checkBoxB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="B+" />
+
+        <CheckBox
+            android:id="@+id/checkBoxBMinute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="B-" />
+
+        <CheckBox
+            android:id="@+id/checkBoxO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="O+" />
+
+        <CheckBox
+            android:id="@+id/checkBoxOMinute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="O-" />
+
+        <CheckBox
+            android:id="@+id/checkBoxAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AB+" />
+
+        <CheckBox
+            android:id="@+id/checkBoxABMinute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AB-" />
+
+
+        <!-- Sorting Options -->
+        <RadioGroup
+            android:id="@+id/sortGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/radioEarliest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Earliest to Latest" />
+
+            <RadioButton
+                android:id="@+id/radioLatest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Latest to Earliest" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
 </LinearLayout>
+
+
