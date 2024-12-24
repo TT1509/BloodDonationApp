@@ -131,6 +131,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
                         holder.finishDonationButton.setVisibility(View.GONE);
                         holder.viewDonorsButton.setVisibility(View.GONE);
                         holder.viewVolunteersButton.setVisibility(View.GONE);
+                        holder.downloadDonorsButton.setVisibility(View.GONE);
                         holder.donorButton.setVisibility(View.VISIBLE);
                         holder.othersDonorButton.setVisibility(View.VISIBLE);
                         holder.othersDonorButton.setText("Add Others");
