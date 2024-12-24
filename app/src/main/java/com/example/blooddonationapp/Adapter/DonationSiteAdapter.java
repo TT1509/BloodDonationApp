@@ -1,5 +1,6 @@
 package com.example.blooddonationapp.Adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,9 +24,12 @@ import com.example.blooddonationapp.Fragment.addOtherDonorsFragment;
 import com.example.blooddonationapp.Model.DonationSite;
 import com.example.blooddonationapp.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +47,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
     private Context context;
     private int mode;
     private String donorBloodType;
+    FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
     public DonationSiteAdapter(List<DonationSite> siteList, Context context, int mode, @Nullable String donorBloodType) {
         this.siteList = siteList;
@@ -124,6 +129,8 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
                     if (mode == MODE_DONOR) {
                         holder.volunteerButton.setVisibility(View.GONE);
                         holder.finishDonationButton.setVisibility(View.GONE);
+                        holder.viewDonorsButton.setVisibility(View.GONE);
+                        holder.viewVolunteersButton.setVisibility(View.GONE);
                         holder.donorButton.setVisibility(View.VISIBLE);
                         holder.othersDonorButton.setVisibility(View.VISIBLE);
                         holder.othersDonorButton.setText("Add Others");
@@ -146,6 +153,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
                         holder.volunteerButton.setVisibility(View.VISIBLE);
                         holder.donorButton.setVisibility(View.GONE);
                         holder.othersDonorButton.setVisibility(View.GONE);
+
                         holder.finishDonationButton.setVisibility(View.VISIBLE);
                         holder.finishDonationButton.setOnClickListener(v -> {
                             // Fetch the site data to get the donors and defaultBloodValue
@@ -187,11 +195,53 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
                                     });
                         });
 
+
+                        holder.viewDonorsButton.setVisibility(View.VISIBLE);
+                        holder.viewDonorsButton.setOnClickListener(v -> {
+                            firestore.collection("donation_sites").document(siteId)
+                                    .get()
+                                    .addOnSuccessListener(managerSnapshot -> {
+                                        if (managerSnapshot.exists()) {
+                                            List<String> currentDonors = (List<String>) managerSnapshot.get("donors");
+                                            if (currentDonors == null || currentDonors.isEmpty()) {
+                                                showAlertDialog("Donors List", "No donors available for this site.");
+                                            } else {
+                                                fetchUserDetails(currentDonors, "Donors List", true);
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(context, "Failed to fetch donors: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        });
+
+                        holder.viewVolunteersButton.setVisibility(View.VISIBLE);
+                        holder.viewVolunteersButton.setOnClickListener(v -> {
+                            firestore.collection("donation_sites").document(siteId)
+                                    .get()
+                                    .addOnSuccessListener(managerSnapshot -> {
+                                        if (managerSnapshot.exists()) {
+                                            List<String> currentVolunteers = (List<String>) managerSnapshot.get("volunteers");
+                                            if (currentVolunteers == null || currentVolunteers.isEmpty()) {
+                                                showAlertDialog("Volunteers List", "No volunteers available for this site.");
+                                            } else {
+                                                fetchUserDetails(currentVolunteers, "Volunteers List", false);
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(context, "Failed to fetch volunteers: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        });
+
+
                     } else {
                         holder.volunteerButton.setVisibility(View.GONE);
                         holder.donorButton.setVisibility(View.GONE);
                         holder.othersDonorButton.setVisibility(View.GONE);
                         holder.finishDonationButton.setVisibility(View.GONE);
+                        holder.viewDonorsButton.setVisibility(View.GONE);
+                        holder.viewVolunteersButton.setVisibility(View.GONE);
 
                         if ("Done".equals(site.getState())) {
                             holder.generateReportButton.setVisibility(View.VISIBLE);
@@ -207,13 +257,77 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
                 });
     }
 
+    private void fetchUserDetails(List<String> userIds, String title, boolean isDonor) {
+        StringBuilder detailsBuilder = new StringBuilder();
+
+        for (String userId : userIds) {
+            firestore.collection("users").document(userId)
+                    .get()
+                    .addOnSuccessListener(userSnapshot -> {
+                        if (userSnapshot.exists()) {
+                            String name = userSnapshot.getString("name");
+                            String email = userSnapshot.getString("email");
+                            Integer phoneNumber = userSnapshot.getLong("phoneNumber") != null
+                                    ? userSnapshot.getLong("phoneNumber").intValue()
+                                    : null;
+                            Date dateOfBirth = userSnapshot.getDate("dateOfBirth");
+                            String gender = userSnapshot.getString("gender");
+
+                            if (isDonor) {
+                                String bloodType = userSnapshot.getString("bloodType");
+                                Integer donationCount = userSnapshot.getLong("donationCount") != null
+                                        ? userSnapshot.getLong("donationCount").intValue()
+                                        : null;
+                                Double height = userSnapshot.getDouble("height");
+                                Double weight = userSnapshot.getDouble("weight");
+
+                                detailsBuilder.append("Name: ").append(name).append("\n")
+                                        .append("Gender: ").append(gender).append("\n")
+                                        .append("Date of Birth: ").append(dateOfBirth != null ? dateOfBirth.toString() : "N/A").append("\n")
+                                        .append("Email: ").append(email).append("\n")
+                                        .append("Phone: ").append(phoneNumber != null ? phoneNumber : "N/A").append("\n")
+                                        .append("Blood Type: ").append(bloodType).append("\n")
+                                        .append("Donation Count: ").append(donationCount != null ? donationCount : "N/A").append("\n")
+                                        .append("Height: ").append(height != null ? height + " cm" : "N/A").append("\n")
+                                        .append("Weight: ").append(weight != null ? weight + " kg" : "N/A").append("\n\n");
+                            } else {
+                                detailsBuilder.append("Name: ").append(name).append("\n")
+                                        .append("Gender: ").append(gender).append("\n")
+                                        .append("Date of Birth: ").append(dateOfBirth != null ? dateOfBirth.toString() : "N/A").append("\n")
+                                        .append("Email: ").append(email).append("\n")
+                                        .append("Phone: ").append(phoneNumber != null ? phoneNumber : "N/A").append("\n\n");
+                            }
+
+                            // Show the dialog when all users are processed
+                            if (detailsBuilder.toString().split("\n\n").length == userIds.size()) {
+                                showAlertDialog(title, detailsBuilder.toString());
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "Failed to fetch user details for ID: " + userId, Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
+
+
+    private void showAlertDialog(String title, String message) {
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+
 
     private void setupVolunteerButton(SiteViewHolder holder, String siteId, String userId, List<String> volunteers) {
         if (volunteers != null && volunteers.contains(userId)) {
             holder.volunteerButton.setText("Volunteered");
             holder.volunteerButton.setOnClickListener(v ->
                     showLeaveConfirmationDialog(siteId, userId, holder.volunteerButton, false)
-            ); // Pass false for "volunteer" role
+            );
         } else {
             holder.volunteerButton.setText("Volunteer");
             holder.volunteerButton.setOnClickListener(v -> joinAsVolunteer(siteId, userId, holder.volunteerButton));
@@ -388,8 +502,6 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
     }
 
 
-
-
     @Override
     public int getItemCount() {
         return siteList.size();
@@ -397,7 +509,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
 
     static class SiteViewHolder extends RecyclerView.ViewHolder {
         TextView siteName, siteLocation, siteDate;
-        Button volunteerButton, donorButton, othersDonorButton, finishDonationButton, generateReportButton;
+        Button volunteerButton, donorButton, othersDonorButton, finishDonationButton, generateReportButton, viewDonorsButton, viewVolunteersButton;
 
         public SiteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -409,6 +521,8 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
             othersDonorButton = itemView.findViewById(R.id.othersDonorButton);
             finishDonationButton = itemView.findViewById(R.id.finishDonationButton);
             generateReportButton = itemView.findViewById(R.id.generateReportButton);
+            viewDonorsButton = itemView.findViewById(R.id.viewDonorsButton);
+            viewVolunteersButton = itemView.findViewById(R.id.viewVolunteersButton);
         }
     }
 }

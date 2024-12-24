@@ -59,6 +59,17 @@
         android:text="Generate Report"
         android:visibility="gone" />
 
+    <Button
+        android:id="@+id/viewDonorsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Donors" />
+
+    <Button
+        android:id="@+id/viewVolunteersButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Volunteers" />
 
 
 </LinearLayout>
