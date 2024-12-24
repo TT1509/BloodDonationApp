@@ -3,6 +3,7 @@ package com.example.blooddonationapp.Adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,9 +15,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blooddonationapp.DonationSiteDetailActivity;
@@ -24,11 +24,12 @@ import com.example.blooddonationapp.Fragment.addOtherDonorsFragment;
 import com.example.blooddonationapp.Model.DonationSite;
 import com.example.blooddonationapp.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +40,6 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
     public static final int MODE_SITE_MANAGER = 0;
     public static final int MODE_DONOR = 1;
     public static final int MODE_SUPER_USER = 2;
-
 
 
     private List<DonationSite> siteList;
@@ -234,6 +234,25 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
                                     });
                         });
 
+                        holder.downloadDonorsButton.setVisibility(View.VISIBLE);
+                        holder.downloadDonorsButton.setOnClickListener(v -> {
+                            firestore.collection("donation_sites").document(siteId)
+                                    .get()
+                                    .addOnSuccessListener(managerSnapshot -> {
+                                        if (managerSnapshot.exists()) {
+                                            List<String> donorIds = (List<String>) managerSnapshot.get("donors");
+                                            if (donorIds == null || donorIds.isEmpty()) {
+                                                Toast.makeText(context, "No donors available for this site.", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                downloadDonorsList(siteId, donorIds);
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(context, "Failed to fetch site donors: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        });
+
 
                     } else {
                         holder.volunteerButton.setVisibility(View.GONE);
@@ -256,6 +275,69 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
                     Toast.makeText(context, "Failed to load site details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private void downloadDonorsList(String siteId, List<String> donorIds) {
+        StringBuilder csvBuilder = new StringBuilder();
+        csvBuilder.append("Name,Gender,Date of Birth,Email,Phone Number,Blood Type,Height (cm),Weight (kg)\n");
+
+        for (String donorId : donorIds) {
+            firestore.collection("users").document(donorId)
+                    .get()
+                    .addOnSuccessListener(userSnapshot -> {
+                        if (userSnapshot.exists()) {
+                            String name = userSnapshot.getString("name");
+                            String gender = userSnapshot.getString("gender");
+                            Date dateOfBirth = userSnapshot.getDate("dateOfBirth");
+                            String email = userSnapshot.getString("email");
+                            Integer phoneNumber = userSnapshot.getLong("phoneNumber") != null
+                                    ? userSnapshot.getLong("phoneNumber").intValue()
+                                    : null;
+                            String bloodType = userSnapshot.getString("bloodType");
+                            Double height = userSnapshot.getDouble("height");
+                            Double weight = userSnapshot.getDouble("weight");
+
+                            csvBuilder.append(name).append(",")
+                                    .append(gender).append(",")
+                                    .append(dateOfBirth != null ? dateOfBirth.toString() : "").append(",")
+                                    .append(email).append(",")
+                                    .append(phoneNumber != null ? phoneNumber : "").append(",")
+                                    .append(bloodType).append(",")
+                                    .append(height != null ? height : "").append(",")
+                                    .append(weight != null ? weight : "").append("\n");
+                        }
+
+                        if (csvBuilder.toString().split("\n").length == donorIds.size() + 1) {
+                            saveAndShareCSV(siteId, csvBuilder.toString());
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "Failed to fetch donor details: " + donorId, Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
+
+    private void saveAndShareCSV(String siteId, String csvData) {
+        try {
+            String fileName = "Donors_List_" + siteId + ".csv";
+            File file = new File(context.getExternalFilesDir(null), fileName);
+
+            FileWriter writer = new FileWriter(file);
+            writer.write(csvData);
+            writer.close();
+
+            // Share the file
+            Uri fileUri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/csv");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+            context.startActivity(Intent.createChooser(shareIntent, "Share Donors List"));
+
+            Toast.makeText(context, "File saved: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(context, "Error saving file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void fetchUserDetails(List<String> userIds, String title, boolean isDonor) {
         StringBuilder detailsBuilder = new StringBuilder();
@@ -509,7 +591,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
 
     static class SiteViewHolder extends RecyclerView.ViewHolder {
         TextView siteName, siteLocation, siteDate;
-        Button volunteerButton, donorButton, othersDonorButton, finishDonationButton, generateReportButton, viewDonorsButton, viewVolunteersButton;
+        Button volunteerButton, donorButton, othersDonorButton, finishDonationButton, generateReportButton, viewDonorsButton, viewVolunteersButton, downloadDonorsButton;
 
         public SiteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -523,6 +605,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
             generateReportButton = itemView.findViewById(R.id.generateReportButton);
             viewDonorsButton = itemView.findViewById(R.id.viewDonorsButton);
             viewVolunteersButton = itemView.findViewById(R.id.viewVolunteersButton);
+            downloadDonorsButton = itemView.findViewById(R.id.downloadDonorsButton);
         }
     }
 }
