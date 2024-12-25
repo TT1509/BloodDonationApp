@@ -2,9 +2,11 @@ package com.example.blooddonationapp.Fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +23,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -31,8 +35,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private Button focusLocationButton;
+    private Button focusLocationButton, findRouteButton;
     private final List<Marker> donationSiteMarkers = new ArrayList<>();
+    private Marker selectedMarker;
+    private Polyline currentRoute;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +51,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public android.view.View onCreateView(@NonNull android.view.LayoutInflater inflater, @Nullable android.view.ViewGroup container, @Nullable Bundle savedInstanceState) {
         android.view.View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
+        // Initialize the buttons
+        focusLocationButton = rootView.findViewById(R.id.focusLocationButton);
+        findRouteButton = rootView.findViewById(R.id.findRouteButton);
+
+        // Set click listeners
+        focusLocationButton.setOnClickListener(v -> focusOnCurrentLocation());
+        findRouteButton.setOnClickListener(v -> findRouteToSelectedMarker());
+
         // Set up the SupportMapFragment
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
@@ -52,28 +66,26 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mapFragment.getMapAsync(this);
         }
 
-        focusLocationButton = rootView.findViewById(R.id.focusLocationButton);
-        focusLocationButton.setOnClickListener(v -> focusOnCurrentLocation());
-
         return rootView;
     }
+
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Display donation site location
-        if (getArguments() != null) {
-            double latitude = getArguments().getDouble("latitude", 0.0);
-            double longitude = getArguments().getDouble("longitude", 0.0);
-            String siteName = getArguments().getString("siteName", "Donation Site");
+        mMap.setOnMarkerClickListener(marker -> {
+            // Highlight the selected marker
+            if (selectedMarker != null) {
+                selectedMarker.setAlpha(1.0f);
+            }
+            selectedMarker = marker;
+            selectedMarker.setAlpha(0.6f);
 
-            LatLng siteLocation = new LatLng(latitude, longitude);
-            mMap.addMarker(new MarkerOptions().position(siteLocation).title(siteName));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(siteLocation, 15));
-        }
+            return false;
+        });
 
-        // Enable current location if permissions are granted
+
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
@@ -83,6 +95,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         if (location != null) {
                             LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.addMarker(new MarkerOptions().position(userLocation).title("Your Location"));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
                         }
                     })
                     .addOnFailureListener(e -> e.printStackTrace());
@@ -90,29 +103,47 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
 
-        // Optionally load additional donation site markers
         loadDonationSites();
     }
 
+    private void findRouteToSelectedMarker() {
+        if (selectedMarker != null && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            LatLng destination = selectedMarker.getPosition();
 
-    public void focusOnLocation(LatLng location, String title) {
-        if (mMap != null) {
-            mMap.clear();
-            mMap.addMarker(new MarkerOptions().position(location).title(title));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+                            // Add logic to draw the route (e.g., using Directions API or Polyline)
+                            drawRoute(userLocation, destination);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        e.printStackTrace();
+                    });
+        } else {
+            // Handle case where no marker is selected or permissions are not granted
+            Toast.makeText(requireContext(), "Please select a donation site marker first", Toast.LENGTH_SHORT).show();
         }
     }
 
 
-    private void moveToUserLocation(@NonNull Location location) {
-        LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+    private void drawRoute(LatLng start, LatLng end) {
+        // Clear existing route
+        if (currentRoute != null) {
+            currentRoute.remove();
+        }
 
-        mMap.clear();
-        addDonationSiteMarkers();
-
-        mMap.addMarker(new MarkerOptions().position(userLatLng).title("Your Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+        // Draw new route
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .add(start)
+                .add(end)
+                .width(8)
+                .color(Color.BLUE);
+        currentRoute = mMap.addPolyline(polylineOptions);
     }
+
+
 
     private void focusOnCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
@@ -121,32 +152,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(location -> {
                         if (location != null) {
-                            moveToUserLocation(location);
-                        } else {
-                            LatLng defaultLocation = new LatLng(-34, 151);
-                            mMap.addMarker(new MarkerOptions().position(defaultLocation).title("Default Location"));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10));
+                            LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
                         }
                     })
                     .addOnFailureListener(e -> {
                         e.printStackTrace();
+                        Toast.makeText(getContext(), "Failed to focus on current location", Toast.LENGTH_SHORT).show();
                     });
-        } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
     }
 
     private void loadDonationSites() {
-        // Initialize Firestore instance
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Query the 'donation_sites' collection
         db.collection("donation_sites")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Extract latitude, longitude, and name
                             Double latitude = document.getDouble("latitude");
                             Double longitude = document.getDouble("longitude");
                             String name = document.getString("name");
@@ -160,20 +183,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                             }
                         }
                     } else {
-                        // Log or handle query failure
                         task.getException().printStackTrace();
                     }
                 });
-    }
-
-    private void addDonationSiteMarkers() {
-        for (Marker marker : donationSiteMarkers) {
-            LatLng position = marker.getPosition();
-            String title = marker.getTitle();
-
-            mMap.addMarker(new MarkerOptions()
-                    .position(position)
-                    .title(title));
-        }
     }
 }

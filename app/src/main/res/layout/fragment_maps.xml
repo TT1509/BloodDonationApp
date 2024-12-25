@@ -19,5 +19,15 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="64dp"
         android:layout_marginEnd="16dp" />
+
+    <Button
+        android:id="@+id/findRouteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Find Route"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="120dp"
+        android:layout_marginEnd="16dp" />
+
 </FrameLayout>
 
