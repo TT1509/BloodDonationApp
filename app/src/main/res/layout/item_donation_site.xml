@@ -3,78 +3,125 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="8dp"
     android:background="?attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/siteName"
+    <!-- Donation Site Details (Left-Aligned) -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/siteName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="Site Name" />
+
+        <TextView
+            android:id="@+id/siteLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location" />
+
+        <TextView
+            android:id="@+id/siteDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date" />
+
+        <TextView
+            android:id="@+id/siteStartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Time" />
+
+        <TextView
+            android:id="@+id/siteEndTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="End Time" />
+
+        <Button
+            android:id="@+id/volunteerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volunteer" />
+
+        <Button
+            android:id="@+id/donorButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Donor" />
+
+        <Button
+            android:id="@+id/othersDonorButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Donor" />
+
+        <Button
+            android:id="@+id/finishDonationButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finish Donation"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/generateReportButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Generate Report"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/viewDonorsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Donors" />
+
+        <Button
+            android:id="@+id/viewVolunteersButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Volunteers" />
+
+        <Button
+            android:id="@+id/downloadDonorsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Download Donors List" />
+    </LinearLayout>
+
+    <!-- Edit and Delete Buttons (Right-Aligned) -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:text="Site Name" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/siteLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Location" />
+        <ImageButton
+            android:id="@+id/updateButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_edit"
+            android:contentDescription="Edit"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside" />
 
-    <TextView
-        android:id="@+id/siteDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date" />
-
-    <Button
-        android:id="@+id/volunteerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Volunteer" />
-
-    <Button
-        android:id="@+id/donorButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Donor" />
-
-    <Button
-        android:id="@+id/othersDonorButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Donor" />
-
-    <Button
-        android:id="@+id/finishDonationButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Finish Donation"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/generateReportButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Generate Report"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/viewDonorsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Donors" />
-
-    <Button
-        android:id="@+id/viewVolunteersButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Volunteers" />
-
-    <Button
-        android:id="@+id/downloadDonorsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Download Donors List" />
-
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_delete"
+            android:contentDescription="Delete"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside" />
+    </LinearLayout>
 </LinearLayout>
+

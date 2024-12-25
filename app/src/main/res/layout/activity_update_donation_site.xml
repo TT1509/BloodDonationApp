@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/siteNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Site Name"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/addressInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Address"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/contactInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contact"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/defaultVolumeInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Default Blood Volume (ml)"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/selectBloodTypesButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Blood Types" />
+
+        <LinearLayout
+            android:id="@+id/bloodTypeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/dateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <Button
+            android:id="@+id/startTimeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Start Time" />
+
+        <Button
+            android:id="@+id/endTimeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select End Time" />
+
+        <Button
+            android:id="@+id/selectLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Location" />
+
+        <Button
+            android:id="@+id/saveSiteButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Changes" />
+    </LinearLayout>
+</ScrollView>
