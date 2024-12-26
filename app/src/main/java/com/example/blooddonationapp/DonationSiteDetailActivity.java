@@ -12,6 +12,7 @@ import com.example.blooddonationapp.Fragment.MapsFragment;
 import com.example.blooddonationapp.Model.DonationSite;
 import com.example.blooddonationapp.Model.User;
 import com.example.blooddonationapp.Utils.FirestoreUtils;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -22,8 +23,9 @@ public class DonationSiteDetailActivity extends AppCompatActivity {
 
     private TextView siteName, siteLocation, siteDescription, siteDate, siteStartTime, siteEndTime, siteContact;
     private TextView managerNameTextView, managerEmailTextView, managerPhoneTextView;
-
+    private GoogleMap mMap;
     private FirebaseFirestore firestore;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

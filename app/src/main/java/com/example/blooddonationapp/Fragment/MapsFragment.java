@@ -87,22 +87,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         });
 
 
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
+        // Get the latitude and longitude from arguments
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            double latitude = arguments.getDouble("latitude", Double.NaN);
+            double longitude = arguments.getDouble("longitude", Double.NaN);
 
-            fusedLocationProviderClient.getLastLocation()
-                    .addOnSuccessListener(location -> {
-                        if (location != null) {
-                            LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(userLocation).title("Your Location"));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
-                        }
-                    })
-                    .addOnFailureListener(e -> e.printStackTrace());
+            // If latitude and longitude are available, focus on the donation site location
+            if (!Double.isNaN(latitude) && !Double.isNaN(longitude)) {
+                LatLng siteLocation = new LatLng(latitude, longitude);
+                mMap.addMarker(new MarkerOptions().position(siteLocation).title(arguments.getString("siteName", "Donation Site")));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(siteLocation, 15));
+            } else {
+                focusOnCurrentLocation();
+            }
         } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            focusOnCurrentLocation();
         }
+
 
         loadDonationSites();
     }
@@ -114,8 +116,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         if (location != null) {
                             LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
                             LatLng destination = selectedMarker.getPosition();
-
-                            // Add logic to draw the route (e.g., using Directions API or Polyline)
                             drawRoute(userLocation, destination);
                         }
                     })
@@ -123,7 +123,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         e.printStackTrace();
                     });
         } else {
-            // Handle case where no marker is selected or permissions are not granted
             Toast.makeText(requireContext(), "Please select a donation site marker first", Toast.LENGTH_SHORT).show();
         }
     }
@@ -154,6 +153,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     .addOnSuccessListener(location -> {
                         if (location != null) {
                             LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.addMarker(new MarkerOptions().position(userLatLng).title("Default Location"));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
                         }
                     })
