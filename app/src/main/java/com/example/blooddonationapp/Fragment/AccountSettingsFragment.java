@@ -21,6 +21,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class AccountSettingsFragment extends Fragment {
 
     private TextView greetingText;
+    private TextView donationCountText;
+    private TextView bloodTypeText;
     private Button logoutButton;
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
@@ -31,6 +33,8 @@ public class AccountSettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_account_settings, container, false);
 
         greetingText = view.findViewById(R.id.greetingText);
+        donationCountText = view.findViewById(R.id.donationCountText);
+        bloodTypeText = view.findViewById(R.id.bloodTypeText);
         logoutButton = view.findViewById(R.id.logoutButton);
 
         auth = FirebaseAuth.getInstance();
@@ -43,9 +47,15 @@ public class AccountSettingsFragment extends Fragment {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String accountName = documentSnapshot.getString("name");
+                        String bloodType = documentSnapshot.getString("bloodType");
+                        Long donationCount = documentSnapshot.getLong("donationCount");
                         greetingText.setText("Hello, " + accountName + "!");
+                        bloodTypeText.setText("Blood Type: " + (bloodType != null ? bloodType : "N/A"));
+                        donationCountText.setText("Donations: " + (donationCount != null ? donationCount : 0));
                     } else {
                         greetingText.setText("Hello, User!");
+                        bloodTypeText.setText("Blood Type: N/A");
+                        donationCountText.setText("Donations: 0");
                     }
                 })
                 .addOnFailureListener(e -> {

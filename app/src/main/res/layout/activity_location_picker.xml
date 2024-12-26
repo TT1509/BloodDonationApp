@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Search Location" />
-
 
     <fragment
         android:id="@+id/mapFragment"
@@ -21,17 +20,23 @@
         android:id="@+id/confirmLocationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="140dp"
+        android:layout_marginBottom="60dp"
         android:text="Confirm"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp" />
+        android:layout_centerHorizontal="true" />
 
-    <Button
+    <ImageButton
         android:id="@+id/focusLocationButton"
-        android:layout_width="wrap_content"
+        android:layout_width="129dp"
         android:layout_height="wrap_content"
-        android:text="0"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="8dp"
-        android:layout_gravity="end" />
-</RelativeLayout>
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="60dp"
+        android:background="@null"
+        android:contentDescription="Focus on Current Location"
+        android:elevation="4dp"
+        android:src="@drawable/ic_focus_location" />
+
+</FrameLayout>

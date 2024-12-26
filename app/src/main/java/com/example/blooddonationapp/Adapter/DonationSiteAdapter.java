@@ -32,9 +32,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapter.SiteViewHolder> {
@@ -78,8 +80,15 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
     @Override
     public void onBindViewHolder(@NonNull SiteViewHolder holder, int position) {
         DonationSite site = siteList.get(position);
-        holder.siteName.setText(site.getName());
-        holder.siteLocation.setText(site.getAddress());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDate = sdf.format(site.getDate());
+
+        holder.siteName.setText("Site Name: " + site.getName());
+        holder.siteLocation.setText("Site Address: " + site.getAddress());
+        holder.siteDate.setText("Date: " + formattedDate);
+        holder.siteStartTime.setText("Start Time: " + site.getStartTime());
+        holder.siteEndTime.setText("End Time: " + site.getEndTime());
 
         // Reset all buttons and visibility to default state
         holder.volunteerButton.setVisibility(View.VISIBLE);
@@ -632,7 +641,7 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
     }
 
     static class SiteViewHolder extends RecyclerView.ViewHolder {
-        TextView siteName, siteLocation, siteDate;
+        TextView siteName, siteLocation, siteDate, siteStartTime, siteEndTime;
         Button volunteerButton, donorButton, othersDonorButton, finishDonationButton, generateReportButton, viewDonorsButton, viewVolunteersButton, downloadDonorsButton;
         ImageButton deleteButton, updateButton;
         public SiteViewHolder(@NonNull View itemView) {
@@ -640,6 +649,8 @@ public class DonationSiteAdapter extends RecyclerView.Adapter<DonationSiteAdapte
             siteName = itemView.findViewById(R.id.siteName);
             siteLocation = itemView.findViewById(R.id.siteLocation);
             siteDate = itemView.findViewById(R.id.siteDate);
+            siteStartTime = itemView.findViewById(R.id.siteStartTime);
+            siteEndTime = itemView.findViewById(R.id.siteEndTime);
             volunteerButton = itemView.findViewById(R.id.volunteerButton);
             donorButton = itemView.findViewById(R.id.donorButton);
             othersDonorButton = itemView.findViewById(R.id.othersDonorButton);

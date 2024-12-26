@@ -2,12 +2,16 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="?attr/backgroundColor">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="?attr/colorSurface"
+        android:layout_gravity="center">
 
         <TextView
             android:id="@+id/siteName"
@@ -16,6 +20,7 @@
             android:text="Site Name"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:textColor="?attr/colorOnPrimary"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -24,6 +29,7 @@
             android:layout_height="wrap_content"
             android:text="Site Location"
             android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -32,6 +38,7 @@
             android:layout_height="wrap_content"
             android:text="Site Description"
             android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -40,6 +47,7 @@
             android:layout_height="wrap_content"
             android:text="Date and Time"
             android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -47,14 +55,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Start Time"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary" />
 
         <TextView
             android:id="@+id/siteEndTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="End Time"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary" />
 
         <TextView
             android:id="@+id/siteContact"
@@ -62,6 +72,7 @@
             android:layout_height="wrap_content"
             android:text="Contact Info"
             android:textSize="16sp"
+            android:textColor="?attr/colorOnSecondary"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -70,6 +81,7 @@
             android:layout_height="wrap_content"
             android:text="Manager Name"
             android:textSize="18sp"
+            android:textColor="?attr/colorPrimary"
             android:layout_marginBottom="8dp"/>
 
         <TextView
@@ -78,6 +90,7 @@
             android:layout_height="wrap_content"
             android:text="Manager Email"
             android:textSize="18sp"
+            android:textColor="?attr/colorPrimary"
             android:layout_marginBottom="8dp"/>
 
         <TextView
@@ -86,13 +99,17 @@
             android:layout_height="wrap_content"
             android:text="Manager Phone"
             android:textSize="18sp"
+            android:textColor="?attr/colorPrimary"
             android:layout_marginBottom="8dp"/>
 
         <FrameLayout
             android:id="@+id/mapFragmentContainer"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="300dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp" />
 
     </LinearLayout>
 </ScrollView>
-

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,7 +36,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private Button focusLocationButton, findRouteButton;
+    private ImageButton focusLocationButton, findRouteButton;
     private final List<Marker> donationSiteMarkers = new ArrayList<>();
     private Marker selectedMarker;
     private Polyline currentRoute;

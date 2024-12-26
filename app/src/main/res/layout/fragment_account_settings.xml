@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Greeting Text -->
     <TextView
         android:id="@+id/greetingText"
         android:layout_width="wrap_content"
@@ -14,10 +15,59 @@
         android:textSize="24sp"
         android:layout_marginBottom="24dp" />
 
+    <!-- Logout Button -->
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Logout" />
 
+    <!-- Two Box Layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp"
+        android:weightSum="2">
+
+        <!-- Donation Count Box -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@drawable/box_background"
+            android:gravity="center"
+            android:layout_margin="8dp"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/donationCountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Donations: 0"
+                android:textSize="16sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <!-- Blood Type Box -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@drawable/box_background"
+            android:gravity="center"
+            android:layout_margin="8dp"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/bloodTypeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blood Type: N/A"
+                android:textSize="16sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

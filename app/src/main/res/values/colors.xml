@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Light Theme Colors -->
+    <color name="light_primary">#E87474</color> <!-- Medium Pinkish-Red -->
+    <color name="light_secondary">#F0A2A2</color> <!-- Soft Pastel Pink -->
+    <color name="light_background">#FCFCFC</color> <!-- Very Light, Nearly White -->
+    <color name="light_surface">#FFFFFF</color> <!-- Pure White -->
+    <color name="light_on_primary">#FFFFFF</color> <!-- Text on Primary -->
+    <color name="light_on_secondary">#000000</color> <!-- Text on Secondary -->
+    <color name="light_on_background">#000000</color> <!-- Text on Background -->
+    <color name="light_on_surface">#000000</color> <!-- Text on Surface -->
+
+    <!-- Night Theme Colors -->
+    <color name="dark_primary">#8A4646</color> <!-- Darker Pinkish-Red -->
+    <color name="dark_secondary">#B27A7A</color> <!-- Muted Pastel Pink -->
+    <color name="dark_background">#121212</color> <!-- Dark Gray for Background -->
+    <color name="dark_surface">#1E1E1E</color> <!-- Slightly Lighter Gray for Surfaces -->
+    <color name="dark_on_primary">#FFFFFF</color> <!-- Text on Primary -->
+    <color name="dark_on_secondary">#FFFFFF</color> <!-- Text on Secondary -->
+    <color name="dark_on_background">#FFFFFF</color> <!-- Text on Background -->
+    <color name="dark_on_surface">#FFFFFF</color> <!-- Text on Surface -->
 </resources>

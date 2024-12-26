@@ -81,6 +81,10 @@
             android:id="@+id/saveSiteButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save Site" />
+            android:text="Save Site"
+            android:layout_marginTop="16dp"
+            android:background="?attr/colorPrimary"
+            android:textColor="?attr/colorOnPrimary"
+            android:textStyle="bold"/>
     </LinearLayout>
 </ScrollView>

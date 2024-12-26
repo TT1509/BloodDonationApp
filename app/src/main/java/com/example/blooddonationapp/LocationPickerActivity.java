@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,7 +34,8 @@ public class LocationPickerActivity extends AppCompatActivity implements OnMapRe
 
     private GoogleMap mMap;
     private LatLng selectedLocation;
-    private Button confirmLocationButton, searchLocationButton, focusLocationButton;
+    private Button confirmLocationButton, searchLocationButton;
+    private ImageButton focusLocationButton;
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
