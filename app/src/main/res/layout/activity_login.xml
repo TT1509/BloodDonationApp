@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:layout_marginTop="150dp">
 
     <TextView
         android:id="@+id/loginTitle"
@@ -13,7 +14,8 @@
         android:text="Login"
         android:textColor="?attr/colorPrimaryVariant"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:paddingStart="160dp"/>
 
     <EditText
         android:id="@+id/emailInput"
